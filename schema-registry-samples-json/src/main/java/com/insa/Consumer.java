@@ -23,7 +23,7 @@ public class Consumer {
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 
         // S'abonner à un sujet (topic) Kafka
-        String topic = "channel";
+        String topic = "yang.tests";
         consumer.subscribe(Collections.singletonList(topic));
 
         // Boucle de consommation des messages

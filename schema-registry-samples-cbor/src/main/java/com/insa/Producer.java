@@ -1,4 +1,4 @@
-package com.app.insa;
+package com.insa;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -7,7 +7,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Properties;
 
-public class Main {
+public class Producer {
     public static void main(String[] args) {
         // Configuration du producteur Kafka
         Properties properties = new Properties();

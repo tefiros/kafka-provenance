@@ -1,4 +1,4 @@
-package com.app.insa;
+package com.insa;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -10,7 +10,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
-public class Main {
+public class Consumer {
     public static void main(String[] args) {
         // Configuration du consommateur Kafka
         Properties properties = new Properties();

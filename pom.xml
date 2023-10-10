@@ -9,6 +9,8 @@
 
     <name>schema-registry-samples</name>
 
+    <description>Kafka producer/consumer samples for testing YANG integration into Schema registry</description>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <yangkit.version>1.4.0</yangkit.version>
@@ -30,10 +32,19 @@
     <developers>
         <developer>
             <id>ahuangfeng</id>
-            <name>Alex Huang Feng</name>
+            <name>Alex HUANG FENG</name>
             <email>alex.huang-feng@insa-lyon.com</email>
             <roles>
                 <role>Project Lead</role>
+            </roles>
+        </developer>
+
+        <developer>
+            <id>BVivek974</id>
+            <name>Vivekananda BOUDIA</name>
+            <email>vivekananda.boudia@insa-lyon.com</email>
+            <roles>
+                <role>Developer</role>
             </roles>
         </developer>
     </developers>

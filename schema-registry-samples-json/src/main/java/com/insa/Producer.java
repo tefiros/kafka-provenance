@@ -67,7 +67,7 @@ public class Producer {
     System.out.println("Size modules = " + schemaContext.getModules().size());
 
     List<String> toRegister = new ArrayList<>(asList(
-        "yang/ietf-inet-types@2021-02-22.yang"
+            "yang/ietf-inet-types@2021-02-22.yang"
 //        "yang/ietf-yang-types@2023-01-23.yang",
 //        "yang/ietf-restconf@2017-01-26.yang",
 //        "yang/ietf-datastores@2018-02-14.yang"

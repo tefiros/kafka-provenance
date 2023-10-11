@@ -7,5 +7,15 @@
     <file url="file://$PROJECT_DIR$/schema-registry-samples-json/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../yangkit/yangkit-data-cbor-codec/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../yangkit/yangkit-data-cbor-codec/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../yangkit/yangkit-data-impl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../yangkit/yangkit-data-impl/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../yangkit/yangkit-data-json-codec/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../yangkit/yangkit-data-json-codec/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../yangkit/yangkit-data-xml-codec/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../yangkit/yangkit-data-xml-codec/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../yangkit/yangkit-examples/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../yangkit/yangkit-examples/src/main/resources" charset="UTF-8" />
   </component>
 </project>

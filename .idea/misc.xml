@@ -6,10 +6,13 @@
       <list>
         <option value="$PROJECT_DIR$/schema-registry-samples-json/pom.xml" />
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/../../yangkit/yangkit-parser/pom.xml" />
+        <option value="$PROJECT_DIR$/../../yangkit/yangkit-data-json-codec/pom.xml" />
+        <option value="$PROJECT_DIR$/../yangkit/pom.xml" />
       </list>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="corretto-11" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

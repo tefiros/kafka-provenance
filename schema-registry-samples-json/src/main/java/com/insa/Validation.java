@@ -7,9 +7,12 @@ import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.model.NotificationMessage;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
+import org.yangcentral.yangkit.data.api.model.YangDataMessage;
+import org.yangcentral.yangkit.data.api.model.YangStructureMessage;
 import org.yangcentral.yangkit.data.codec.json.NotificationMessageJsonCodec;
 import org.yangcentral.yangkit.data.codec.json.YangDataParser;
 import org.yangcentral.yangkit.data.codec.json.YangDataWriterJson;
+import org.yangcentral.yangkit.data.codec.json.YangStructureMessageJsonCodec;
 import org.yangcentral.yangkit.model.api.schema.YangSchemaContext;
 import org.yangcentral.yangkit.parser.YangParserException;
 import org.yangcentral.yangkit.parser.YangYinParser;
@@ -23,6 +26,7 @@ public class Validation {
         String jsonFileValid = Validation.class.getClassLoader().getResource("validation/valid.json").getFile();
         String jsonFileInvalid = Validation.class.getClassLoader().getResource("validation/invalid.json").getFile();
         String jsonFileMissing = Validation.class.getClassLoader().getResource("validation/missing.json").getFile();
+        String jsonFileIncorrect = Validation.class.getClassLoader().getResource("validation/incorrect.json").getFile();
         String yangPath = Validation.class.getClassLoader().getResource("validation/test.yang").getFile();
 
         // parse yang file
@@ -57,6 +61,15 @@ public class Validation {
             e.printStackTrace();
         }
 
+        // parse json file : incorrect
+        JsonNode elementIncorrect = null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            elementIncorrect = objectMapper.readTree(new File(jsonFileIncorrect));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         ValidatorResultBuilder validatorResultBuilderValid = new ValidatorResultBuilder();
         YangDataDocument yangDataDocumentValid = new YangDataParser(elementValid, schemaContext, false).parse(validatorResultBuilderValid);
 
@@ -65,6 +78,9 @@ public class Validation {
 
         ValidatorResultBuilder validatorResultBuilderMissing = new ValidatorResultBuilder();
         YangDataDocument yangDataDocumentMissing = new YangDataParser(elementMissing, schemaContext, false).parse(validatorResultBuilderMissing);
+
+        ValidatorResultBuilder validatorResultBuilderIncorrect = new ValidatorResultBuilder();
+        YangDataDocument yangDataDocumentIncorrect = new YangDataParser(elementIncorrect, schemaContext, false).parse(validatorResultBuilderMissing);
 
         yangDataDocumentInvalid.update();
         validatorResult = yangDataDocumentInvalid.validate();
@@ -80,6 +96,11 @@ public class Validation {
         validatorResult = yangDataDocumentMissing.validate();
         validatorResultBuilderMissing.merge(validatorResult);
         System.out.println("yang data document missing (false?)-> " + validatorResultBuilderMissing.build());
+
+        yangDataDocumentIncorrect.update();
+        validatorResult = yangDataDocumentIncorrect.validate();
+        validatorResultBuilderIncorrect.merge(validatorResult);
+        System.out.println("yang data document incorrect (false?)-> " + validatorResultBuilderIncorrect.build());
 
         System.out.println("Fin du programme !");
     }

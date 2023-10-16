@@ -1,4 +1,4 @@
-package com.insa;
+/*package com.insa;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -122,4 +122,4 @@ public class Producer {
     // Fermer le producteur Kafka
     producer.close();
   }
-}
+}*/

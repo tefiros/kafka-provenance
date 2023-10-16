@@ -53,7 +53,7 @@ module ietf-notification {
   }
 
   sx:structure notification {
-    leaf eventTime {
+    leaf event-time {
       type yang:date-and-time;
       mandatory true;
       description

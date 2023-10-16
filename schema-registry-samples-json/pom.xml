@@ -75,6 +75,21 @@
             <version>1.4.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.yang-central.yangkit</groupId>
+            <artifactId>yangkit-data-xml-codec</artifactId>
+            <version>1.4.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>2.0.9</version>
+        </dependency>
     </dependencies>
-
 </project>

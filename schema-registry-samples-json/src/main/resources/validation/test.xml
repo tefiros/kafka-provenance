@@ -1,4 +1,0 @@
-<insa-test:insa-container xmlns:insa-test="urn:ietf:params:xml:ns:yang:insa-test">
-    <insa-test:computer>"computer"</insa-test:computer>
-    <insa-test:router>234</insa-test:router>
-</insa-test:insa-container>

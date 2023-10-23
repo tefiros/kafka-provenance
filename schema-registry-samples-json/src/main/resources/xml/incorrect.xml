@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<insa-test xmlns="urn:ietf:params:xml:ns:yang:insa-test">
+    <insa-container>
+        <computer>1</computer>
+        <router>234</router>
+    </insa-container>
+</insa-test>

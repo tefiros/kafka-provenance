@@ -41,5 +41,10 @@ module insa-test {
             type uint8;
             description "router";
         }
+        leaf time {
+            type string {
+                pattern "[0-9]{2}:[0-9]{2}:[0-9]{2}";
+            }
+    }
     }
 }

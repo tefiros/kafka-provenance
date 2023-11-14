@@ -31,13 +31,22 @@ module insa-test {
     container insa-container {
         config false;
         leaf computer {
-            type string;
+            type string {
+                length "0..4";
+            }
             mandatory true;
             description "computer";
         }
         leaf router {
-            type uint8;
+            type uint8 {
+                range "1..4";
+            }
             description "router";
+        }
+        leaf time {
+            type string {
+                pattern "[0-9]{2}:[0-9]{2}:[0-9]{2}";
+            }
         }
     }
 }

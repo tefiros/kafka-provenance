@@ -1,8 +1,8 @@
 {
   "data": {
     "insa-test:insa-container": {
-      "computer": 1,
-      "router": 234
+      "computer": "computer",
+      "router": "hey"
     }
   }
 }

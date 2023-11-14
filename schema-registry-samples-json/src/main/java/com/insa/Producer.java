@@ -94,7 +94,7 @@ public class Producer {
       System.out.println("Subject: " + subject);
     }
 
-    InputStream jsonInputStream = Producer.class.getClassLoader().getResourceAsStream("json/notification.json");
+    InputStream jsonInputStream = Producer.class.getClassLoader().getResourceAsStream("json/valid.json");
     ObjectMapper objectMapper = new ObjectMapper();
     JsonNode yangPushNotification = objectMapper.readTree(jsonInputStream);
 

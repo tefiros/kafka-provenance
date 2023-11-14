@@ -1,8 +1,9 @@
 {
   "data": {
     "insa-test:insa-container": {
-      "computer": "computer",
-      "router": 234
+      "computer": "a",
+      "router": 2,
+      "time": "12:04:34"
     }
   }
 }

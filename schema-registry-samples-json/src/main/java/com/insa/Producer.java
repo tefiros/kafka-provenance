@@ -2,9 +2,8 @@ package com.insa;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaDeserializer;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializer;
-import com.swisscom.kafka.schemaregistry.yang.YangSchema;
+import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
 import org.apache.commons.lang3.SerializationException;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -31,19 +30,20 @@ public class Producer {
         producerConfig.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         producerConfig.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringSerializer.class.getName());
         producerConfig.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaYangJsonSchemaSerializer.class.getName());
+        //producerConfig.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "true");
         producerConfig.setProperty("schema.registry.url", "http://127.0.0.1:8081");
 
         KafkaProducer<Object, Object> producer = new KafkaProducer<>(producerConfig);
 
-        YangSchemaContext schemaContext = YangYinParser.parse(Producer.class.getClassLoader().getResource("json/test.yang").getFile());
+        YangSchemaContext schemaContext = YangYinParser.parse(Producer.class.getClassLoader().getResource("json/test2.yang").getFile());
         schemaContext.validate();
-        JsonNode jsonNode = new ObjectMapper().readTree(new File(Producer.class.getClassLoader().getResource("json/valid.json").getFile()));
+        JsonNode jsonNode = new ObjectMapper().readTree(new File(Producer.class.getClassLoader().getResource("json/invalid2.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataParser(jsonNode, schemaContext, false).parse(validatorResultBuilder);
         doc.validate();
 
         String key = "key1";
-        String topic = "topic.test";
+        String topic = "yang.tests";
 
         ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, doc);
         try {
@@ -55,6 +55,7 @@ public class Producer {
             producer.close();
         }
 
+        System.out.println("send -> " + jsonNode);
         System.out.println("finish !");
 
     }

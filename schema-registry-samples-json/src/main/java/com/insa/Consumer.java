@@ -1,6 +1,8 @@
 package com.insa;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializer;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializerConfig;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
@@ -8,6 +10,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -24,20 +27,28 @@ public class Consumer {
         consumerConfig.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class.getName());
         consumerConfig.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaYangJsonSchemaDeserializer.class.getName());
         consumerConfig.setProperty(KafkaYangJsonSchemaDeserializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "true");
+        consumerConfig.setProperty(KafkaYangJsonSchemaDeserializerConfig.USE_SCHEMA_ID, "1");
         consumerConfig.setProperty("schema.registry.url", "http://127.0.0.1:8081");
         consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
 
-        KafkaConsumer<Object, Object> consumer = new KafkaConsumer<>(consumerConfig);
+        KafkaConsumer<String, YangDataDocument> consumer = new KafkaConsumer<>(consumerConfig);
         String topic = "yang.tests";
 
         consumer.subscribe(Collections.singletonList(topic));
 
         while(true){
-            ConsumerRecords<Object, Object> records = consumer.poll(Duration.ofMillis(100));
+            ConsumerRecords<String, YangDataDocument> records = consumer.poll(Duration.ofMillis(100));
 
-            for(ConsumerRecord<Object, Object> r: records){
-                System.out.println("Clé : " + r.key() + ", Valeur : " + r.value() + ", Offset : " + r.offset());
+            for(ConsumerRecord<String, YangDataDocument> r: records){
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode jsonNode;
+                try {
+                    jsonNode = mapper.readTree(r.value().getDocString());
+                    System.out.println("Clé : " + r.key() + ", Valeur : " + jsonNode + ", Offset : " + r.offset());
+                } catch (JsonProcessingException ignored) {
+                    System.out.println("Clé : " + r.key() + ", Valeur : error :( " + ", Offset : " + r.offset());
+                }
             }
         }
 

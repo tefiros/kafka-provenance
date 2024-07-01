@@ -33,11 +33,11 @@ public class Producer {
         producerConfig.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "true");
         producerConfig.setProperty("schema.registry.url", "http://127.0.0.1:8081");
 
-        KafkaProducer<Object, Object> producer = new KafkaProducer<>(producerConfig);
+        KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
 
         YangSchemaContext schemaContext = YangYinParser.parse(Producer.class.getClassLoader().getResource("json/test2.yang").getFile());
         schemaContext.validate();
-        JsonNode jsonNode = new ObjectMapper().readTree(new File(Producer.class.getClassLoader().getResource("json/invalid2.json").getFile()));
+        JsonNode jsonNode = new ObjectMapper().readTree(new File(Producer.class.getClassLoader().getResource("json/valid2.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataParser(jsonNode, schemaContext, false).parse(validatorResultBuilder);
         doc.validate();
@@ -45,7 +45,7 @@ public class Producer {
         String key = "key1";
         String topic = "yang.tests";
 
-        ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, doc);
+        ProducerRecord<String, YangDataDocument> record = new ProducerRecord<>(topic, key, doc);
         try {
             producer.send(record);
         } catch (SerializationException e) {

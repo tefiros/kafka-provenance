@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializer;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializerConfig;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
+import io.confluent.kafka.serializers.subject.RecordNameStrategy;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -27,7 +28,7 @@ public class Consumer {
         consumerConfig.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class.getName());
         consumerConfig.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaYangJsonSchemaDeserializer.class.getName());
         consumerConfig.setProperty(KafkaYangJsonSchemaDeserializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "true");
-        consumerConfig.setProperty(KafkaYangJsonSchemaDeserializerConfig.USE_SCHEMA_ID, "1");
+        consumerConfig.setProperty(KafkaYangJsonSchemaDeserializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
         consumerConfig.setProperty("schema.registry.url", "http://127.0.0.1:8081");
         consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 

@@ -2,7 +2,6 @@ package com.insa;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializerConfig;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializer;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
 import io.confluent.kafka.serializers.subject.RecordNameStrategy;

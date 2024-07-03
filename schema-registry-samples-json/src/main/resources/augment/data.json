@@ -1,0 +1,8 @@
+{
+  "data" : {
+    "insa-test-simple:insa-container" : {
+      "simple": true,
+      "complex": false
+    }
+  }
+}

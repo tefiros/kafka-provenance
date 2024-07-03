@@ -5,12 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializer;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializerConfig;
-import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
 import io.confluent.kafka.serializers.subject.RecordNameStrategy;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 
 import java.time.Duration;
@@ -18,7 +15,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 public class Consumer {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         System.out.println("Consumer ->");
 
         Properties consumerConfig = new Properties();
@@ -38,18 +35,20 @@ public class Consumer {
 
         consumer.subscribe(Collections.singletonList(topic));
 
-        while(true){
-            ConsumerRecords<String, YangDataDocument> records = consumer.poll(Duration.ofMillis(100));
-
-            for(ConsumerRecord<String, YangDataDocument> r: records){
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode jsonNode;
-                try {
+        while (true) {
+            try {
+                ConsumerRecords<String, YangDataDocument> records = consumer.poll(Duration.ofMillis(100));
+                for (ConsumerRecord<String, YangDataDocument> r : records) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode jsonNode;
                     jsonNode = mapper.readTree(r.value().getDocString());
                     System.out.println("Clé : " + r.key() + ", Valeur : " + jsonNode + ", Offset : " + r.offset());
-                } catch (JsonProcessingException ignored) {
-                    System.out.println("Clé : " + r.key() + ", Valeur : error :( " + ", Offset : " + r.offset());
                 }
+            } catch (RecordDeserializationException e) {
+                System.out.println("Error during deserialization : message is ignored");
+                consumer.seek(e.topicPartition(), e.offset() + 1L);
+            } catch (JsonProcessingException ignored) {
+                System.out.println("Error reading json");
             }
         }
 

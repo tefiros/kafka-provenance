@@ -48,7 +48,11 @@ public class AppTest {
 
     private final static String TOPIC = "yang.tests";
     private final static String TOPIC_ERROR = "yang.tests.error";
-    private final String KEY = "KEY";
+    public static final String PRODUCER_MSG_ERROR_EXPECTED_THROW = "serializer does not throw serialization error when json is invalid";
+    public static final String ERROR_TRYING_TO_SEND_DATA = "error trying to send data";
+    public static final String JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT = "producer JsonNode and consumer JsonNode are different";
+    public static final String ERROR_TRYING_TO_GET_DATA = "error trying to get data";
+    public static final String CONSUMER_MSG_ERROR_EXPECTED_THROW = "deserializer does not throw deserialization error when json is invalid ";
 
     private YangSchemaContext getSchemaContext(String yangFile) {
         try {
@@ -103,7 +107,7 @@ public class AppTest {
         assertNotNull(jsonNode, "JsonNode is null, please check path");
         YangDataDocument yangDataDocument = getYangDataDocument(schemaContext, jsonNode);
         KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
-        ProducerRecord<String, YangDataDocument> record = new ProducerRecord<>(topic, KEY, yangDataDocument);
+        ProducerRecord<String, YangDataDocument> record = new ProducerRecord<>(topic, "KEY", yangDataDocument);
         try {
             producer.send(record);
         } finally {
@@ -188,23 +192,23 @@ public class AppTest {
                 this.getClass().getClassLoader().getResource("test1/valid.json").getFile(),
                 producerProperties,
                 TOPIC
-        ), "error trying to send data");
-        JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), "error trying to get data");
-        assertEquals(producerNode, consumerNode, "producer JsonNode and consumer JsonNode are different");
+        ), ERROR_TRYING_TO_SEND_DATA);
+        JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
+        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
     }
 
     @Test
     @DisplayName("Yang : 1 module (insa-test) , Json : invalid, Producer : valid true, Consumer : valid true")
     public void test2() {
         Properties producerProperties = getDefaultProducerConfig();
-        assertThrows(SerializationException.class, () -> {
+        assertThrowsExactly(SerializationException.class, () -> {
             producerSendJson(
                     this.getClass().getClassLoader().getResource("test2/test.yang").getFile(),
                     this.getClass().getClassLoader().getResource("test2/invalid.json").getFile(),
                     producerProperties,
                     TOPIC_ERROR
             );
-        }, "serializer does not throw error when json is invalid");
+        }, PRODUCER_MSG_ERROR_EXPECTED_THROW);
     }
 
     @Test
@@ -218,8 +222,8 @@ public class AppTest {
                 this.getClass().getClassLoader().getResource("test3/invalid.json").getFile(),
                 producerProperties,
                 TOPIC
-        ), "error trying to send data");
-        assertThrowsExactly(RecordDeserializationException.class, () -> consumerGetLast(consumerProperties), "deserializer does not throw error when json is invalid ");
+        ), ERROR_TRYING_TO_SEND_DATA);
+        assertThrowsExactly(RecordDeserializationException.class, () -> consumerGetLast(consumerProperties), CONSUMER_MSG_ERROR_EXPECTED_THROW);
     }
 
     @Test
@@ -233,8 +237,8 @@ public class AppTest {
                 this.getClass().getClassLoader().getResource("test4/simple.json").getFile(),
                 producerProperties,
                 TOPIC
-        ), "error trying to send data");
-        JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), "error trying to get data");
+        ), ERROR_TRYING_TO_SEND_DATA);
+        JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
         assertEquals(producerNode, consumerNode, "producer JsonNode and consumer JsonNode are different");
 
         //complex schema and complex data
@@ -243,9 +247,103 @@ public class AppTest {
                 this.getClass().getClassLoader().getResource("test4/valid.json").getFile(),
                 producerProperties,
                 TOPIC
-        ), "error trying to send data");
-        consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), "error trying to get data");
-        assertEquals(producerNode, consumerNode, "producer JsonNode and consumer JsonNode are different");
+        ), ERROR_TRYING_TO_SEND_DATA);
+        consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
+        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
     }
 
+    @Test
+    @DisplayName("Yang : 2 module (insa-test-simple-remote, insa-test-complex-remote) , Json : valid, Producer : valid true, Consumer : valid true")
+    public void test5() {
+        Properties producerProperties = getDefaultProducerConfig();
+        Properties consumerProperties = getDefaultConsumerConfig();
+        //simple schema and simple data
+        JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
+                this.getClass().getClassLoader().getResource("test4/insa-test-simple-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("test4/simple.json").getFile(),
+                producerProperties,
+                TOPIC
+        ), ERROR_TRYING_TO_SEND_DATA);
+        JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
+        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+
+        //complex schema and complex data
+        assertThrowsExactly(SerializationException.class, () -> producerSendJson(
+                this.getClass().getClassLoader().getResource("test5/insa-test-complex-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("test5/invalid.json").getFile(),
+                producerProperties,
+                TOPIC_ERROR
+        ), PRODUCER_MSG_ERROR_EXPECTED_THROW);
+    }
+
+    @Test
+    @DisplayName("Yang : 2 module (insa-test-simple-remote, insa-test-complex-remote) , Json : valid, Producer : valid false (only for complex), Consumer : valid true")
+    public void test6() {
+        Properties producerProperties = getDefaultProducerConfig();
+        Properties consumerProperties = getDefaultConsumerConfig();
+        //simple schema and simple data
+        JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
+                this.getClass().getClassLoader().getResource("test4/insa-test-simple-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("test4/simple.json").getFile(),
+                producerProperties,
+                TOPIC
+        ), ERROR_TRYING_TO_SEND_DATA);
+        JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
+        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+
+        producerProperties.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "false");
+        //complex schema and complex data
+        assertDoesNotThrow(() -> producerSendJson(
+                this.getClass().getClassLoader().getResource("test6/insa-test-complex-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("test6/invalid.json").getFile(),
+                producerProperties,
+                TOPIC_ERROR
+        ), ERROR_TRYING_TO_SEND_DATA);
+        assertThrowsExactly(RecordDeserializationException.class, () -> consumerGetLast(consumerProperties), CONSUMER_MSG_ERROR_EXPECTED_THROW);
+
+    }
+
+    @Test
+    @DisplayName("Yang : 2 module (insa-test-simple-local, insa-test-complex-local), Json : valid, Producer : valid true, Consumer : valid true")
+    public void test7() {
+        Properties producerProperties = getDefaultProducerConfig();
+        Properties consumerProperties = getDefaultConsumerConfig();
+        JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
+                this.getClass().getClassLoader().getResource("test7/yangs").getFile(),
+                this.getClass().getClassLoader().getResource("test7/valid.json").getFile(),
+                producerProperties,
+                TOPIC
+        ), ERROR_TRYING_TO_SEND_DATA);
+        JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
+        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+    }
+
+    @Test
+    @DisplayName("Yang : 2 module (insa-test-simple-local, insa-test-complex-local), Json : invalid, Producer : valid true, Consumer : valid true")
+    public void test8() {
+        Properties producerProperties = getDefaultProducerConfig();
+        assertThrowsExactly(SerializationException.class, () -> {
+            producerSendJson(
+                    this.getClass().getClassLoader().getResource("test8/yangs").getFile(),
+                    this.getClass().getClassLoader().getResource("test8/invalid.json").getFile(),
+                    producerProperties,
+                    TOPIC_ERROR
+            );
+        }, PRODUCER_MSG_ERROR_EXPECTED_THROW);
+    }
+
+    @Test
+    @DisplayName("Yang : 2 module (insa-test-simple-local, insa-test-complex-local), Json : invalid, Producer : valid false, Consumer : valid true")
+    public void test9() {
+        Properties producerProperties = getDefaultProducerConfig();
+        Properties consumerProperties = getDefaultConsumerConfig();
+        producerProperties.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "false");
+        assertDoesNotThrow(() -> producerSendJson(
+                this.getClass().getClassLoader().getResource("test9/yangs").getFile(),
+                this.getClass().getClassLoader().getResource("test9/invalid.json").getFile(),
+                producerProperties,
+                TOPIC
+        ), ERROR_TRYING_TO_SEND_DATA);
+        assertThrowsExactly(RecordDeserializationException.class, () -> consumerGetLast(consumerProperties), CONSUMER_MSG_ERROR_EXPECTED_THROW);
+    }
 }

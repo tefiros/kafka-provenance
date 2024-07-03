@@ -16,7 +16,7 @@
         <yangkit.version>1.4.0</yangkit.version>
         <schema-registry.version>7.5.0-0</schema-registry.version>
         <kafka.client.version>3.6.0</kafka.client.version>
-        <junit.version>3.8.1</junit.version>
+        <junit.version>5.9.1</junit.version>
         <jackson.databind.version>2.15.2</jackson.databind.version>
     </properties>
 

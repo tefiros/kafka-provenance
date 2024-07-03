@@ -1,4 +1,4 @@
-module insa-custom {
+module insa-custom2 {
     yang-version 1;
     namespace "urn:ietf:params:xml:ns:yang:insa-yang";
     prefix iny;

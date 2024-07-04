@@ -2,7 +2,7 @@
   "data": {
     "insa-test-simple-local:insa-container": {
       "simple": true,
-      "complex": true
+      "complex": "abc"
     }
   }
 }

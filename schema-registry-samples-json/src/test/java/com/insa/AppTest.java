@@ -283,8 +283,8 @@ public class AppTest {
         Properties consumerProperties = getDefaultConsumerConfig();
         //simple schema and simple data
         JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("test4/insa-test-simple-remote.yang").getFile(),
-                this.getClass().getClassLoader().getResource("test4/simple.json").getFile(),
+                this.getClass().getClassLoader().getResource("test6/insa-test-simple-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("test6/simple.json").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -297,7 +297,7 @@ public class AppTest {
                 this.getClass().getClassLoader().getResource("test6/insa-test-complex-remote.yang").getFile(),
                 this.getClass().getClassLoader().getResource("test6/invalid.json").getFile(),
                 producerProperties,
-                TOPIC_ERROR
+                TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
         assertThrowsExactly(RecordDeserializationException.class, () -> consumerGetLast(consumerProperties), CONSUMER_MSG_ERROR_EXPECTED_THROW);
 

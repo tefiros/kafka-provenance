@@ -2,7 +2,7 @@ module insa-test-complex-local{
     yang-version 1.1;
     namespace "urn:ietf:params:xml:ns:yang:insa-test";
     prefix ictx;
-    import insa-test-simple {
+    import insa-test-simple-local {
         prefix ity;
         reference "ref";
     }

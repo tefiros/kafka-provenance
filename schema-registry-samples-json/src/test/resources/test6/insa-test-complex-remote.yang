@@ -2,7 +2,7 @@ module insa-test-complex-remote{
     yang-version 1.1;
     namespace "urn:ietf:params:xml:ns:yang:insa-test";
     prefix ictx;
-    import insa-test-simple {
+    import insa-test-simple-remote {
         prefix ity;
         reference "ref";
     }

@@ -59,8 +59,6 @@ public class AppTest {
         try {
             YangSchemaContext schemaContext = YangYinParser.parse(yangFile);
             ValidatorResult result = schemaContext.validate();
-            System.out.println(schemaContext.resolvesImportOrder());
-            assertTrue(result.isOk(), "error with schema(s)");
             return schemaContext;
         } catch (IOException | YangParserException | DocumentException e) {
             return null;

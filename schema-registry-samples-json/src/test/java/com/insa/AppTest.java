@@ -26,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 import org.yangcentral.yangkit.data.codec.json.YangDataParser;
@@ -57,7 +58,9 @@ public class AppTest {
     private YangSchemaContext getSchemaContext(String yangFile) {
         try {
             YangSchemaContext schemaContext = YangYinParser.parse(yangFile);
-            schemaContext.validate();
+            ValidatorResult result = schemaContext.validate();
+            System.out.println(schemaContext.resolvesImportOrder());
+            assertTrue(result.isOk(), "error with schema(s)");
             return schemaContext;
         } catch (IOException | YangParserException | DocumentException e) {
             return null;
@@ -126,6 +129,7 @@ public class AppTest {
             ObjectMapper mapper = new ObjectMapper();
             ConsumerRecord<String, YangDataDocument> record = records.iterator().next();
             jsonNode = mapper.readTree(record.value().getDocString());
+            System.out.println("modules " + record.value().getSchemaContext().getModules());
             System.out.println("offset -> " + record.offset());
             System.out.println("json -> " + jsonNode);
         } catch (RecordDeserializationException e) {
@@ -346,4 +350,35 @@ public class AppTest {
         ), ERROR_TRYING_TO_SEND_DATA);
         assertThrowsExactly(RecordDeserializationException.class, () -> consumerGetLast(consumerProperties), CONSUMER_MSG_ERROR_EXPECTED_THROW);
     }
+
+    @Test
+    @DisplayName("Yang : 3 module (insa-test-base, insa-test-augments-1, insa-test-augments-2), Json : valid, Producer : valid true, Consumer : valid true")
+    public void test10() {
+        Properties producerProperties = getDefaultProducerConfig();
+        Properties consumerProperties = getDefaultConsumerConfig();
+        JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
+                this.getClass().getClassLoader().getResource("test10/yangs").getFile(),
+                this.getClass().getClassLoader().getResource("test10/valid.json").getFile(),
+                producerProperties,
+                TOPIC
+        ), ERROR_TRYING_TO_SEND_DATA);
+        JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
+        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+    }
+
+    @Test
+    @DisplayName("Yang : 3 module (insa-test-base-1, insa-test-augments-1, insa-test-base-2), Json : valid, Producer : valid true, Consumer : valid true")
+    public void test11() {
+        Properties producerProperties = getDefaultProducerConfig();
+        Properties consumerProperties = getDefaultConsumerConfig();
+        JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
+                this.getClass().getClassLoader().getResource("test11/yangs").getFile(),
+                this.getClass().getClassLoader().getResource("test11/valid.json").getFile(),
+                producerProperties,
+                TOPIC
+        ), ERROR_TRYING_TO_SEND_DATA);
+        JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
+        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+    }
+
 }

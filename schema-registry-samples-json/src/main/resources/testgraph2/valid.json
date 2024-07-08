@@ -1,0 +1,11 @@
+{
+  "data": {
+    "base:container": {
+      "value": true,
+      "augments-2:container-2": {
+        "augments-1:data-1": "true",
+        "augments-3:data-3": true
+      }
+    }
+  }
+}

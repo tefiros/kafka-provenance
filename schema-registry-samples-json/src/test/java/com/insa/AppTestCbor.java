@@ -4,12 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializer;
-import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializerConfig;
-import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializer;
+import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
+import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaDeserializer;
+import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaDeserializerConfig;
+import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaSerializer;
+import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaSerializerConfig;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
 import io.confluent.kafka.serializers.subject.RecordNameStrategy;
-import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.DeleteTopicsResult;
+import org.apache.kafka.clients.admin.ListTopicsOptions;
+import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -22,9 +27,6 @@ import org.apache.kafka.common.errors.SerializationException;
 import org.dom4j.DocumentException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
@@ -42,14 +44,16 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * Unit test for simple App.
  */
-public class AppTest {
+public class AppTestCbor {
 
     private final static String TOPIC = "yang.tests";
     private final static String TOPIC_ERROR = "yang.tests.error";
-    public static final String PRODUCER_MSG_ERROR_EXPECTED_THROW = "serializer does not throw serialization error when json is invalid";
+    public static final String PRODUCER_MSG_ERROR_EXPECTED_THROW = "serializer does not throw serialization error when cbor is invalid";
     public static final String ERROR_TRYING_TO_SEND_DATA = "error trying to send data";
     public static final String JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT = "producer JsonNode and consumer JsonNode are different";
     public static final String ERROR_TRYING_TO_GET_DATA = "error trying to get data";
@@ -65,9 +69,9 @@ public class AppTest {
         }
     }
 
-    private JsonNode getJsonNode(String jsonFile) {
+    private JsonNode getCborJsonNode(String cborFile) {
         try {
-            return new ObjectMapper().readTree(new File(jsonFile));
+            return new ObjectMapper(new CBORFactory()).readTree(new File(cborFile));
         } catch (IOException e) {
             return null;
         }
@@ -81,9 +85,9 @@ public class AppTest {
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringSerializer.class.getName());
-        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaYangJsonSchemaSerializer.class.getName());
-        properties.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "true");
-        properties.setProperty(KafkaYangJsonSchemaSerializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
+        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaYangCborSchemaSerializer.class.getName());
+        properties.setProperty(KafkaYangCborSchemaSerializerConfig.YANG_CBOR_FAIL_INVALID_SCHEMA, "true");
+        properties.setProperty(KafkaYangCborSchemaSerializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
         properties.setProperty("schema.registry.url", "http://127.0.0.1:8081");
         return properties;
     }
@@ -93,18 +97,18 @@ public class AppTest {
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "test");
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaYangJsonSchemaDeserializer.class.getName());
-        properties.setProperty(KafkaYangJsonSchemaDeserializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "true");
-        properties.setProperty(KafkaYangJsonSchemaDeserializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
+        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaYangCborSchemaDeserializer.class.getName());
+        properties.setProperty(KafkaYangCborSchemaDeserializerConfig.YANG_CBOR_FAIL_INVALID_SCHEMA, "true");
+        properties.setProperty(KafkaYangCborSchemaDeserializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
         properties.setProperty("schema.registry.url", "http://127.0.0.1:8081");
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         return properties;
     }
 
-    private JsonNode producerSendJson(String schemaFile, String jsonFile, Properties producerConfig, String topic) {
+    private JsonNode producerSendJson(String schemaFile, String cborFile, Properties producerConfig, String topic) {
         YangSchemaContext schemaContext = getSchemaContext(schemaFile);
         assertNotNull(schemaContext, "SchemaContext is null, please check path");
-        JsonNode jsonNode = getJsonNode(jsonFile);
+        JsonNode jsonNode = getCborJsonNode(cborFile);
         assertNotNull(jsonNode, "JsonNode is null, please check path");
         YangDataDocument yangDataDocument = getYangDataDocument(schemaContext, jsonNode);
         KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
@@ -143,7 +147,6 @@ public class AppTest {
 
     }
 
-    @BeforeAll
     public static void cleanUpSchemaRegistry() throws IOException {
         System.out.println("CLEAN UP SCHEMA REGISTRY");
 
@@ -161,7 +164,6 @@ public class AppTest {
         System.out.println("CLEAN UP SCHEMA REGISTRY DONE");
     }
 
-    @BeforeAll
     public static void cleanUpKafka() throws InterruptedException, ExecutionException {
         System.out.println("CLEAN UP KAFKA");
 
@@ -187,11 +189,12 @@ public class AppTest {
     @Test
     @DisplayName("Yang : 1 module (insa-test) , Json : valid, Producer : valid true, Consumer : valid true")
     public void test1() {
+        JsonNode test = getCborJsonNode(this.getClass().getClassLoader().getResource("cbor/test1/valid.cbor").getFile());
         Properties producerProperties = getDefaultProducerConfig();
         Properties consumerProperties = getDefaultConsumerConfig();
         JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test1/test.yang").getFile(),
-                this.getClass().getClassLoader().getResource("json/test1/valid.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/cbor/test1/test.yang").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test1/valid.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -205,8 +208,8 @@ public class AppTest {
         Properties producerProperties = getDefaultProducerConfig();
         assertThrowsExactly(SerializationException.class, () -> {
             producerSendJson(
-                    this.getClass().getClassLoader().getResource("json/test2/test.yang").getFile(),
-                    this.getClass().getClassLoader().getResource("json/test2/invalid.json").getFile(),
+                    this.getClass().getClassLoader().getResource("cbor/test2/test.yang").getFile(),
+                    this.getClass().getClassLoader().getResource("cbor/test2/invalid.cbor").getFile(),
                     producerProperties,
                     TOPIC_ERROR
             );
@@ -220,8 +223,8 @@ public class AppTest {
         Properties consumerProperties = getDefaultConsumerConfig();
         producerProperties.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "false");
         assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test3/test.yang").getFile(),
-                this.getClass().getClassLoader().getResource("json/test3/invalid.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test3/test.yang").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test3/invalid.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -235,8 +238,8 @@ public class AppTest {
         Properties consumerProperties = getDefaultConsumerConfig();
         //simple schema and simple data
         JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test4/insa-test-simple-remote.yang").getFile(),
-                this.getClass().getClassLoader().getResource("json/test4/simple.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test4/insa-test-simple-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test4/simple.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -245,8 +248,8 @@ public class AppTest {
 
         //complex schema and complex data
         producerNode = assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test4/insa-test-complex-remote.yang").getFile(),
-                this.getClass().getClassLoader().getResource("json/test4/valid.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test4/insa-test-complex-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test4/valid.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -261,8 +264,8 @@ public class AppTest {
         Properties consumerProperties = getDefaultConsumerConfig();
         //simple schema and simple data
         JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test4/insa-test-simple-remote.yang").getFile(),
-                this.getClass().getClassLoader().getResource("json/test4/simple.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test4/insa-test-simple-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test4/simple.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -271,8 +274,8 @@ public class AppTest {
 
         //complex schema and complex data
         assertThrowsExactly(SerializationException.class, () -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test5/insa-test-complex-remote.yang").getFile(),
-                this.getClass().getClassLoader().getResource("json/test5/invalid.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test5/insa-test-complex-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test5/invalid.cbor").getFile(),
                 producerProperties,
                 TOPIC_ERROR
         ), PRODUCER_MSG_ERROR_EXPECTED_THROW);
@@ -285,8 +288,8 @@ public class AppTest {
         Properties consumerProperties = getDefaultConsumerConfig();
         //simple schema and simple data
         JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test6/insa-test-simple-remote.yang").getFile(),
-                this.getClass().getClassLoader().getResource("json/test6/simple.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test6/insa-test-simple-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test6/simple.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -296,8 +299,8 @@ public class AppTest {
         producerProperties.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "false");
         //complex schema and complex data
         assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test6/insa-test-complex-remote.yang").getFile(),
-                this.getClass().getClassLoader().getResource("json/test6/invalid.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test6/insa-test-complex-remote.yang").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test6/invalid.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -311,8 +314,8 @@ public class AppTest {
         Properties producerProperties = getDefaultProducerConfig();
         Properties consumerProperties = getDefaultConsumerConfig();
         JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test7/yangs").getFile(),
-                this.getClass().getClassLoader().getResource("json/test7/valid.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test7/yangs").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test7/valid.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -326,8 +329,8 @@ public class AppTest {
         Properties producerProperties = getDefaultProducerConfig();
         assertThrowsExactly(SerializationException.class, () -> {
             producerSendJson(
-                    this.getClass().getClassLoader().getResource("json/test8/yangs").getFile(),
-                    this.getClass().getClassLoader().getResource("json/test8/invalid.json").getFile(),
+                    this.getClass().getClassLoader().getResource("cbor/test8/yangs").getFile(),
+                    this.getClass().getClassLoader().getResource("cbor/test8/invalid.cbor").getFile(),
                     producerProperties,
                     TOPIC_ERROR
             );
@@ -341,8 +344,8 @@ public class AppTest {
         Properties consumerProperties = getDefaultConsumerConfig();
         producerProperties.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "false");
         assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test9/yangs").getFile(),
-                this.getClass().getClassLoader().getResource("json/test9/invalid.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test9/yangs").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test9/invalid.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -355,8 +358,8 @@ public class AppTest {
         Properties producerProperties = getDefaultProducerConfig();
         Properties consumerProperties = getDefaultConsumerConfig();
         JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test10/yangs").getFile(),
-                this.getClass().getClassLoader().getResource("json/test10/valid.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test10/yangs").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test10/valid.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
@@ -370,8 +373,8 @@ public class AppTest {
         Properties producerProperties = getDefaultProducerConfig();
         Properties consumerProperties = getDefaultConsumerConfig();
         JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("json/test11/yangs").getFile(),
-                this.getClass().getClassLoader().getResource("json/test11/valid.json").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test11/yangs").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test11/valid.cbor").getFile(),
                 producerProperties,
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);

@@ -43,19 +43,7 @@ public class GraphTest {
         return false;
     }
 
-    private HashSet<Module> getGraph(Module m){
-        HashSet<Module> graph = new HashSet<>();
-        Deque<Module> todo = new LinkedList<>(Collections.singleton(m));
-        Module current = todo.pollFirst();
-        while(current != null) {
-            graph.add(current);
-            todo.addAll(current.getDependentBys());
-            current = todo.pollFirst();
-        }
-        return graph;
-    }
-
-    private List<List<Module>> mergeLevel0(List<Module> lvl0, HashMap<Module, HashSet<Module>> graphs) {
+    private List<List<Module>> mergeLevel0(YangSchemaContext context, List<Module> lvl0) {
         List<List<Module>> newLvl0 = new ArrayList<>();
         HashSet<Module> alreadyInGraph = new HashSet<>();
         for (Module m1 : lvl0) {
@@ -63,10 +51,9 @@ public class GraphTest {
             if (alreadyInGraph.contains(m1)) continue;
             alreadyInGraph.add(m1);
             for (Module m2 : lvl0) {
+                System.out.println(m1.getArgStr() + " " + m2.getArgStr() + " " + isNodesConnected(context, m1, m2));
                 if (m1 == m2 || alreadyInGraph.contains(m2)) continue;
-                HashSet<Module> tg1 = new HashSet<>(graphs.get(m1));
-                tg1.retainAll(graphs.get(m2));
-                if (!tg1.isEmpty()) {
+                if (isNodesConnected(context, m1, m2)) {
                     alreadyInGraph.add(m2);
                     temp.add(m2);
                 }
@@ -76,20 +63,43 @@ public class GraphTest {
         return newLvl0;
     }
 
+    private boolean isNodesConnected(YangSchemaContext context, Module start, Module end) {
+        if (start.getArgStr().equals(end.getArgStr())) return true;
+        Set<Module> visited = new HashSet<>();
+        Deque<Module> stack = new LinkedList<>();
+        stack.add(start);
+        while (!stack.isEmpty()) {
+            Module current = stack.pop();
+            System.out.println(current.getArgStr());
+            if (!visited.contains(current)) {
+                visited.add(current);
+                for (Module m : current.getDependentBys()) {
+                    if (m.getArgStr().equals(end.getArgStr())) return true;
+                    stack.add(m);
+                }
+                for (Import i : current.getImports()) {
+                    for (Module m : context.getModule(i.getArgStr())) {
+                        if (m.getArgStr().equals(end.getArgStr())) return true;
+                        stack.add(m);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private List<List<Module>> getModulesInOrder(YangSchemaContext context, List<Module> modules) {
         List<List<Module>> correctOrder = new ArrayList<>();
         List<Module> level0Module = new ArrayList<>();
         HashMap<Module, Integer> cost = new HashMap<>();
-        HashMap<Module, HashSet<Module>> graphs = new HashMap<>();
         for (Module m : modules) {
             if (!hasLocalImport(context, m)) {
                 level0Module.add(m);
-                graphs.put(m, getGraph(m));
             }
             cost.put(m, m.getImports().size());
         }
         level0Module.sort(Comparator.comparing(Module::getArgStr));
-        List<List<Module>> mergedLevel0 = mergeLevel0(level0Module, graphs);
+        List<List<Module>> mergedLevel0 = mergeLevel0(context, level0Module);
         for (List<Module> l0List : mergedLevel0) {
             List<Module> tempCorrectOrder = new ArrayList<>();
             Deque<Module> moduleStack = new LinkedList<>(l0List);
@@ -115,7 +125,7 @@ public class GraphTest {
     @Test
     public void test1() {
         String[] correctOrder = {"base", "augments-2", "augments-1", "augments-3"};
-        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph1").getFile());
+        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph/graph1").getFile());
         List<Module> modules = context.getModules();
         List<Module> modulesInOrder = getModulesInOrder(context, modules).get(0);
         System.out.println("expected " + Arrays.deepToString(correctOrder));
@@ -126,7 +136,7 @@ public class GraphTest {
     @Test
     public void test2() {
         String[] correctOrder = {"base", "augments-2", "augments-1", "augments-3"};
-        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph2").getFile());
+        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph/graph2").getFile());
         List<Module> modules = context.getModules();
         List<Module> modulesInOrder = getModulesInOrder(context, modules).get(0);
         System.out.println("expected " + Arrays.deepToString(correctOrder));
@@ -137,7 +147,7 @@ public class GraphTest {
     @Test
     public void test3() {
         String[] correctOrder = {"base", "augments-1", "augments-2", "augments-3"};
-        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph3").getFile());
+        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph/graph3").getFile());
         List<Module> modules = context.getModules();
         List<Module> modulesInOrder = getModulesInOrder(context, modules).get(0);
         System.out.println("expected " + Arrays.deepToString(correctOrder));
@@ -152,7 +162,7 @@ public class GraphTest {
                 {"base2", "augments2-1", "augments2-2"},
                 {"base3", "augments3-1"},
         };
-        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph4").getFile());
+        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph/graph4").getFile());
         List<Module> modules = context.getModules();
         List<List<Module>> modulesInOrder = getModulesInOrder(context, modules);
         System.out.println("expected " + Arrays.deepToString(correctOrder));
@@ -173,7 +183,7 @@ public class GraphTest {
     @Test
     public void test6() {
         String[] correctOrder = {"base", "base2", "augments-1", "augments-2", "augments-3"};
-        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph6").getFile());
+        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph/graph6").getFile());
         List<Module> modules = context.getModules();
         List<Module> modulesInOrder = getModulesInOrder(context, modules).get(0);
         System.out.println("expected " + Arrays.deepToString(correctOrder));
@@ -184,7 +194,7 @@ public class GraphTest {
     @Test
     public void test7() {
         String[] correctOrder = {"remote"};
-        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph7").getFile(), false);
+        YangSchemaContext context = getSchemaContext(GraphTest.class.getClassLoader().getResource("graph/graph7").getFile(), false);
         List<Module> modules = context.getModules();
         List<Module> modulesInOrder = getModulesInOrder(context, modules).get(0);
         System.out.println("expected " + Arrays.deepToString(correctOrder));

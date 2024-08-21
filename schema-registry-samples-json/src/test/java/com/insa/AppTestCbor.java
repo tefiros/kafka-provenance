@@ -9,7 +9,6 @@ import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaDeserializer;
 import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaDeserializerConfig;
 import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaSerializer;
 import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaSerializerConfig;
-import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
 import io.confluent.kafka.serializers.subject.RecordNameStrategy;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
@@ -147,6 +146,7 @@ public class AppTestCbor {
 
     }
 
+    @BeforeAll
     public static void cleanUpSchemaRegistry() throws IOException {
         System.out.println("CLEAN UP SCHEMA REGISTRY");
 
@@ -164,6 +164,7 @@ public class AppTestCbor {
         System.out.println("CLEAN UP SCHEMA REGISTRY DONE");
     }
 
+    @BeforeAll
     public static void cleanUpKafka() throws InterruptedException, ExecutionException {
         System.out.println("CLEAN UP KAFKA");
 
@@ -189,11 +190,10 @@ public class AppTestCbor {
     @Test
     @DisplayName("Yang : 1 module (insa-test) , Json : valid, Producer : valid true, Consumer : valid true")
     public void test1() {
-        JsonNode test = getCborJsonNode(this.getClass().getClassLoader().getResource("cbor/test1/valid.cbor").getFile());
         Properties producerProperties = getDefaultProducerConfig();
         Properties consumerProperties = getDefaultConsumerConfig();
         JsonNode producerNode = assertDoesNotThrow(() -> producerSendJson(
-                this.getClass().getClassLoader().getResource("cbor/cbor/test1/test.yang").getFile(),
+                this.getClass().getClassLoader().getResource("cbor/test1/test.yang").getFile(),
                 this.getClass().getClassLoader().getResource("cbor/test1/valid.cbor").getFile(),
                 producerProperties,
                 TOPIC
@@ -221,7 +221,7 @@ public class AppTestCbor {
     public void test3() {
         Properties producerProperties = getDefaultProducerConfig();
         Properties consumerProperties = getDefaultConsumerConfig();
-        producerProperties.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "false");
+        producerProperties.setProperty(KafkaYangCborSchemaSerializerConfig.YANG_CBOR_FAIL_INVALID_SCHEMA, "false");
         assertDoesNotThrow(() -> producerSendJson(
                 this.getClass().getClassLoader().getResource("cbor/test3/test.yang").getFile(),
                 this.getClass().getClassLoader().getResource("cbor/test3/invalid.cbor").getFile(),
@@ -296,7 +296,7 @@ public class AppTestCbor {
         JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
         assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
 
-        producerProperties.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "false");
+        producerProperties.setProperty(KafkaYangCborSchemaSerializerConfig.YANG_CBOR_FAIL_INVALID_SCHEMA, "false");
         //complex schema and complex data
         assertDoesNotThrow(() -> producerSendJson(
                 this.getClass().getClassLoader().getResource("cbor/test6/insa-test-complex-remote.yang").getFile(),
@@ -342,7 +342,7 @@ public class AppTestCbor {
     public void test9() {
         Properties producerProperties = getDefaultProducerConfig();
         Properties consumerProperties = getDefaultConsumerConfig();
-        producerProperties.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "false");
+        producerProperties.setProperty(KafkaYangCborSchemaSerializerConfig.YANG_CBOR_FAIL_INVALID_SCHEMA, "false");
         assertDoesNotThrow(() -> producerSendJson(
                 this.getClass().getClassLoader().getResource("cbor/test9/yangs").getFile(),
                 this.getClass().getClassLoader().getResource("cbor/test9/invalid.cbor").getFile(),

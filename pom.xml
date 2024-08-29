@@ -13,7 +13,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <yangkit.version>1.4.0</yangkit.version>
+        <yangkit.version>1.4.5</yangkit.version>
         <schema-registry.version>7.5.0-0</schema-registry.version>
         <kafka.client.version>3.6.0</kafka.client.version>
         <junit.version>5.9.1</junit.version>

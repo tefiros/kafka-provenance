@@ -73,13 +73,13 @@
         <dependency>
             <groupId>io.github.yang-central.yangkit</groupId>
             <artifactId>yangkit-data-json-codec</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.github.yang-central.yangkit</groupId>
             <artifactId>yangkit-data-xml-codec</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

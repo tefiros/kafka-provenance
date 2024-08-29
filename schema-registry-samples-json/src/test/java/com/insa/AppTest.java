@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
-import org.yangcentral.yangkit.data.codec.json.YangDataParser;
+import org.yangcentral.yangkit.data.codec.json.YangDataDocumentJsonParser;
 import org.yangcentral.yangkit.model.api.schema.YangSchemaContext;
 import org.yangcentral.yangkit.parser.YangParserException;
 import org.yangcentral.yangkit.parser.YangYinParser;
@@ -74,7 +74,7 @@ public class AppTest {
     }
 
     private YangDataDocument getYangDataDocument(YangSchemaContext schemaContext, JsonNode jsonNode) {
-        return new YangDataParser(jsonNode, schemaContext, false).parse(new ValidatorResultBuilder());
+        return new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, new ValidatorResultBuilder());
     }
 
     private Properties getDefaultProducerConfig() {
@@ -84,7 +84,7 @@ public class AppTest {
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaYangJsonSchemaSerializer.class.getName());
         properties.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "true");
         properties.setProperty(KafkaYangJsonSchemaSerializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
-        properties.setProperty("schema.registry.url", "http://127.0.0.1:8082");
+        properties.setProperty("schema.registry.url", "http://127.0.0.1:8081");
         return properties;
     }
 
@@ -96,7 +96,7 @@ public class AppTest {
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaYangJsonSchemaDeserializer.class.getName());
         properties.setProperty(KafkaYangJsonSchemaDeserializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "true");
         properties.setProperty(KafkaYangJsonSchemaDeserializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
-        properties.setProperty("schema.registry.url", "http://127.0.0.1:8082");
+        properties.setProperty("schema.registry.url", "http://127.0.0.1:8081");
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         return properties;
     }
@@ -115,7 +115,7 @@ public class AppTest {
             producer.flush();
             producer.close();
         }
-        return jsonNode.get("data");
+        return jsonNode;
     }
 
     private JsonNode consumerGetLast(Properties consumerConfig) {
@@ -147,7 +147,7 @@ public class AppTest {
     public static void cleanUpSchemaRegistry() throws IOException {
         System.out.println("CLEAN UP SCHEMA REGISTRY");
 
-        URL url = new URL("http://localhost:8082/subjects");
+        URL url = new URL("http://localhost:8081/subjects");
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayNode subjects = (ArrayNode) objectMapper.readTree(url);
         for (JsonNode subject : subjects) {

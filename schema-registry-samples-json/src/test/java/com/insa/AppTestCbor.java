@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
-import org.yangcentral.yangkit.data.codec.json.YangDataParser;
+import org.yangcentral.yangkit.data.codec.json.YangDataDocumentJsonParser;
 import org.yangcentral.yangkit.model.api.schema.YangSchemaContext;
 import org.yangcentral.yangkit.parser.YangParserException;
 import org.yangcentral.yangkit.parser.YangYinParser;
@@ -77,7 +77,7 @@ public class AppTestCbor {
     }
 
     private YangDataDocument getYangDataDocument(YangSchemaContext schemaContext, JsonNode jsonNode) {
-        return new YangDataParser(jsonNode, schemaContext, false).parse(new ValidatorResultBuilder());
+        return new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, new ValidatorResultBuilder());
     }
 
     private Properties getDefaultProducerConfig() {
@@ -118,7 +118,7 @@ public class AppTestCbor {
             producer.flush();
             producer.close();
         }
-        return jsonNode.get("data");
+        return jsonNode;
     }
 
     private JsonNode consumerGetLast(Properties consumerConfig) {

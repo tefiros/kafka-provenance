@@ -12,7 +12,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.dom4j.DocumentException;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
-import org.yangcentral.yangkit.data.codec.json.YangDataParser;
+import org.yangcentral.yangkit.data.codec.json.YangDataDocumentJsonParser;
 import org.yangcentral.yangkit.model.api.schema.YangSchemaContext;
 import org.yangcentral.yangkit.parser.YangParserException;
 import org.yangcentral.yangkit.parser.YangYinParser;
@@ -42,7 +42,7 @@ public class Producer {
         schemaContext.validate();
         JsonNode jsonNode = new ObjectMapper().readTree(new File(Producer.class.getClassLoader().getResource("json/valid.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
-        YangDataDocument doc = new YangDataParser(jsonNode, schemaContext, false).parse(validatorResultBuilder);
+        YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
         doc.validate();
 
         String key = "key1";

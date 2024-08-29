@@ -24,6 +24,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.apache.kafka.common.errors.SerializationException;
 import org.dom4j.DocumentException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -108,7 +109,7 @@ public class AppTestCbor {
         YangSchemaContext schemaContext = getSchemaContext(schemaFile);
         assertNotNull(schemaContext, "SchemaContext is null, please check path");
         JsonNode jsonNode = getCborJsonNode(cborFile);
-        assertNotNull(jsonNode, "JsonNode is null, please check path");
+        Assertions.assertNotNull(jsonNode, "JsonNode is null, please check path");
         YangDataDocument yangDataDocument = getYangDataDocument(schemaContext, jsonNode);
         KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
         ProducerRecord<String, YangDataDocument> record = new ProducerRecord<>(topic, "KEY", yangDataDocument);
@@ -199,7 +200,7 @@ public class AppTestCbor {
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
         JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
-        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+        Assertions.assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
     }
 
     @Test
@@ -244,7 +245,7 @@ public class AppTestCbor {
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
         JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
-        assertEquals(producerNode, consumerNode, "producer JsonNode and consumer JsonNode are different");
+        Assertions.assertEquals(producerNode, consumerNode, "producer JsonNode and consumer JsonNode are different");
 
         //complex schema and complex data
         producerNode = assertDoesNotThrow(() -> producerSendJson(
@@ -254,7 +255,7 @@ public class AppTestCbor {
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
         consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
-        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+        Assertions.assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
     }
 
     @Test
@@ -270,7 +271,7 @@ public class AppTestCbor {
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
         JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
-        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+        Assertions.assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
 
         //complex schema and complex data
         assertThrowsExactly(SerializationException.class, () -> producerSendJson(
@@ -294,7 +295,7 @@ public class AppTestCbor {
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
         JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
-        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+        Assertions.assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
 
         producerProperties.setProperty(KafkaYangCborSchemaSerializerConfig.YANG_CBOR_FAIL_INVALID_SCHEMA, "false");
         //complex schema and complex data
@@ -320,7 +321,7 @@ public class AppTestCbor {
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
         JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
-        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+        Assertions.assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
     }
 
     @Test
@@ -364,7 +365,7 @@ public class AppTestCbor {
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
         JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
-        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+        Assertions.assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
     }
 
     @Test
@@ -379,7 +380,7 @@ public class AppTestCbor {
                 TOPIC
         ), ERROR_TRYING_TO_SEND_DATA);
         JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
-        assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
+        Assertions.assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
     }
 
 }

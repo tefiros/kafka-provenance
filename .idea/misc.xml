@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MavenProjectsManager">
@@ -9,6 +10,20 @@
         <option value="$PROJECT_DIR$/../../yangkit/yangkit-data-json-codec/pom.xml" />
         <option value="$PROJECT_DIR$/../yangkit/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/../yangkit/yangkit-data-api/pom.xml" />
+        <option value="$PROJECT_DIR$/../yangkit/yangkit-data-impl/pom.xml" />
+        <option value="$PROJECT_DIR$/../yangkit/yangkit-data-json-codec/pom.xml" />
+        <option value="$PROJECT_DIR$/../yangkit/yangkit-data-xml-codec/pom.xml" />
+        <option value="$PROJECT_DIR$/../yangkit/yangkit-examples/pom.xml" />
+        <option value="$PROJECT_DIR$/../yangkit/yangkit-model-api/pom.xml" />
+        <option value="$PROJECT_DIR$/../yangkit/yangkit-model-impl/pom.xml" />
+        <option value="$PROJECT_DIR$/../yangkit/yangkit-parser/pom.xml" />
+        <option value="$PROJECT_DIR$/../yangkit/yangkit-xpath-api/pom.xml" />
+        <option value="$PROJECT_DIR$/../yangkit/yangkit-xpath-impl/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">

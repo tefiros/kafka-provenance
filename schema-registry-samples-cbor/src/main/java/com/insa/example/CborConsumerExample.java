@@ -1,4 +1,4 @@
-package com.insa;
+package com.insa.example;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

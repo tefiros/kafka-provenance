@@ -1,4 +1,4 @@
-package com.insa;
+package com.insa.telemetry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +10,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.dom4j.DocumentException;
+import org.yangcentral.yangkit.common.api.validate.ValidatorRecord;
+import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 import org.yangcentral.yangkit.data.codec.json.YangDataDocumentJsonParser;
@@ -21,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-public class CborProducerExample {
+public class CborProducerTelemetry {
     public static void main(String[] args) throws DocumentException, IOException, YangParserException {
 
         // Configure Kafka producer
@@ -37,10 +39,16 @@ public class CborProducerExample {
 
         // Create producer
         KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
+        YangSchemaContext schemaContext = YangYinParser.parse(CborProducerTelemetry.class.getClassLoader().getResource("telemetry/yangs").getFile());
+        ValidatorResult result = schemaContext.validate();
+        System.out.println(result.isOk());
+        //TODO: Missing Ahmed dependencies
+        for (ValidatorRecord<?, ?> record : result.getRecords()) {
+            System.out.println("rrr " + record.getErrorMsg().getMessage());
+        }
 
-        YangSchemaContext schemaContext = YangYinParser.parse(CborProducerExample.class.getClassLoader().getResource("example/test.yang").getFile());
-        schemaContext.validate();
-        JsonNode jsonNode = new ObjectMapper().readTree(new File(CborProducerExample.class.getClassLoader().getResource("example/valid.json").getFile()));
+        System.out.println(result.getRecords());
+        JsonNode jsonNode = new ObjectMapper().readTree(new File(CborProducerTelemetry.class.getClassLoader().getResource("telemetry/telemetry-msg.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
         doc.validate();

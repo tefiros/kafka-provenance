@@ -8,6 +8,8 @@ import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializerConfi
 import io.confluent.kafka.serializers.subject.RecordNameStrategy;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.errors.RecordDeserializationException;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.Headers;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 
 import java.time.Duration;
@@ -39,6 +41,10 @@ public class Consumer {
             try {
                 ConsumerRecords<String, YangDataDocument> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, YangDataDocument> r : records) {
+                    Headers headers = r.headers();
+                    for (Header header : headers) {
+                        System.out.println("[Header] Key: " + header.key() + ", Value: " + new String(header.value()));
+                    }
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode jsonNode;
                     jsonNode = mapper.readTree(r.value().getDocString());

@@ -18,8 +18,8 @@ package com.insa.telemetry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaSerializer;
-import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaSerializerConfig;
+import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializer;
+import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
 import io.confluent.kafka.serializers.subject.RecordNameStrategy;
 import org.apache.commons.lang3.SerializationException;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -39,25 +39,26 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-public class CborProducerTelemetry {
-    public static void main(String[] args) throws DocumentException, IOException, YangParserException {
+public class JsonProducerTelemetry {
 
-        // Configure Kafka producer
+    public static void main(String[] args) throws IOException, YangParserException, DocumentException {
+        System.out.println("Starting Telemetry Producer (draft-aelhassany-telemetry-msg)");
+
         Properties producerConfig = new Properties();
 
         producerConfig.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         producerConfig.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringSerializer.class.getName());
-        producerConfig.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaYangCborSchemaSerializer.class.getName());
-        producerConfig.setProperty(KafkaYangCborSchemaSerializerConfig.YANG_CBOR_FAIL_INVALID_SCHEMA, "true");
-        producerConfig.setProperty(KafkaYangCborSchemaSerializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
-
+        producerConfig.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaYangJsonSchemaSerializer.class.getName());
+        producerConfig.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "true");
+        producerConfig.setProperty(KafkaYangJsonSchemaSerializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
         producerConfig.setProperty("schema.registry.url", "http://127.0.0.1:8081");
 
-        // Create producer
+        // Creating producer
         KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
 
         // Parsing YANGs
-        YangSchemaContext schemaContext = YangYinParser.parse(CborProducerTelemetry.class.getClassLoader().getResource("telemetry/yangs").getFile());
+        YangSchemaContext schemaContext = YangYinParser.parse(JsonProducerTelemetry.class.getClassLoader().getResource("telemetry/yangs").getFile());
+        schemaContext.validate();
         ValidatorResult result = schemaContext.validate();
         System.out.println("Schema context is valid : " + result.isOk());
         //TODO: Missing Ahmed dependencies
@@ -65,7 +66,7 @@ public class CborProducerTelemetry {
             System.out.println("Error: " + record.getErrorMsg().getMessage());
         }
         // Parsing JSON
-        JsonNode jsonNode = new ObjectMapper().readTree(new File(CborProducerTelemetry.class.getClassLoader().getResource("telemetry/telemetry-msg.json").getFile()));
+        JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerTelemetry.class.getClassLoader().getResource("telemetry/valid.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
         doc.validate();
@@ -77,12 +78,13 @@ public class CborProducerTelemetry {
         try {
             producer.send(record);
         } catch (SerializationException e) {
-            System.out.println("Error serializing: " + e.getMessage());
+            System.out.println(e.getMessage());
         } finally {
             producer.flush();
             producer.close();
         }
 
-        System.out.println("sent -> " + jsonNode);
+        System.out.println("Sent message: " + jsonNode);
+        System.out.println("End producer !");
     }
 }

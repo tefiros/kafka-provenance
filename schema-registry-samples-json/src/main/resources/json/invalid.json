@@ -1,9 +1,0 @@
-{
-  "data": {
-    "insa-test:insa-container": {
-      "computer": "computer",
-      "router": 234,
-      "invalid_key": "hey"
-    }
-  }
-}

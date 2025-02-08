@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package com.insa.telemetry;
+package com.insa.example;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaSerializer;
-import com.insa.kafka.serializers.yang.cbor.KafkaYangCborSchemaSerializerConfig;
+import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializer;
+import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
 import io.confluent.kafka.serializers.subject.RecordNameStrategy;
 import org.apache.commons.lang3.SerializationException;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.dom4j.DocumentException;
-import org.yangcentral.yangkit.common.api.validate.ValidatorRecord;
-import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 import org.yangcentral.yangkit.data.codec.json.YangDataDocumentJsonParser;
@@ -39,50 +37,45 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-public class CborProducerTelemetry {
-    public static void main(String[] args) throws DocumentException, IOException, YangParserException {
+public class JsonProducerExample {
 
-        // Configure Kafka producer
+    public static void main(String[] args) throws IOException, YangParserException, DocumentException {
+        System.out.println("Starting Producer");
+
         Properties producerConfig = new Properties();
 
         producerConfig.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         producerConfig.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringSerializer.class.getName());
-        producerConfig.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaYangCborSchemaSerializer.class.getName());
-        producerConfig.setProperty(KafkaYangCborSchemaSerializerConfig.YANG_CBOR_FAIL_INVALID_SCHEMA, "true");
-        producerConfig.setProperty(KafkaYangCborSchemaSerializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
-
+        producerConfig.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaYangJsonSchemaSerializer.class.getName());
+        producerConfig.setProperty(KafkaYangJsonSchemaSerializerConfig.YANG_JSON_FAIL_INVALID_SCHEMA, "true");
+        producerConfig.setProperty(KafkaYangJsonSchemaSerializerConfig.VALUE_SUBJECT_NAME_STRATEGY, RecordNameStrategy.class.getName());
         producerConfig.setProperty("schema.registry.url", "http://127.0.0.1:8081");
 
-        // Create producer
+        // Creating producer
         KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
 
-        // Parsing YANGs
-        YangSchemaContext schemaContext = YangYinParser.parse(CborProducerTelemetry.class.getClassLoader().getResource("telemetry/yangs").getFile());
-        ValidatorResult result = schemaContext.validate();
-        System.out.println("Schema context is valid : " + result.isOk());
-        //TODO: Missing Ahmed dependencies
-        for (ValidatorRecord<?, ?> record : result.getRecords()) {
-            System.out.println("Error: " + record.getErrorMsg().getMessage());
-        }
-        // Parsing JSON
-        JsonNode jsonNode = new ObjectMapper().readTree(new File(CborProducerTelemetry.class.getClassLoader().getResource("telemetry/telemetry-msg.json").getFile()));
+        // Parsing YANGs and JSON
+        YangSchemaContext schemaContext = YangYinParser.parse(JsonProducerExample.class.getClassLoader().getResource("example/test.yang").getFile());
+        schemaContext.validate();
+        JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerExample.class.getClassLoader().getResource("example/valid.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
         doc.validate();
 
         String key = "key1";
         String topic = "yang.tests";
-        ProducerRecord<String, YangDataDocument> record = new ProducerRecord<>(topic, key, doc);
 
+        ProducerRecord<String, YangDataDocument> record = new ProducerRecord<>(topic, key, doc);
         try {
             producer.send(record);
         } catch (SerializationException e) {
-            System.out.println("Error serializing: " + e.getMessage());
+            System.out.println(e.getMessage());
         } finally {
             producer.flush();
             producer.close();
         }
 
-        System.out.println("sent -> " + jsonNode);
+        System.out.println("Sent message " + jsonNode);
+        System.out.println("End producer !");
     }
 }

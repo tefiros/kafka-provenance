@@ -9,7 +9,7 @@
 
     <name>schema-registry-samples</name>
 
-    <description>Kafka producer/consumer samples for testing YANG integration into Schema registry</description>
+    <description>Kafka producer/consumer samples for testing YANG integration into Schema Registry</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

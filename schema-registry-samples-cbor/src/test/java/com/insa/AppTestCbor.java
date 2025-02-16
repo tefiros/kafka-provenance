@@ -24,10 +24,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.apache.kafka.common.errors.SerializationException;
 import org.dom4j.DocumentException;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
@@ -47,7 +44,10 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit test for simple App.
+ * Integration test for simple the producer and consumer.
+ * The execution of the integration tests need a schema registry instance deployed.
+ * Execute these tests only in controlled environments.
+ * Enable test at your own risk.
  */
 public class AppTestCbor {
 
@@ -189,6 +189,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 1 module (insa-test) , Json : valid, Producer : valid true, Consumer : valid true")
     public void test1() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -204,6 +205,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 1 module (insa-test) , Json : invalid, Producer : valid true, Consumer : valid true")
     public void test2() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -218,6 +220,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 1 module (insa-test) , Json : invalid, Producer : valid false, Consumer : valid true")
     public void test3() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -233,6 +236,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 2 module (insa-test-simple-remote, insa-test-complex-remote) , Json : valid, Producer : valid true, Consumer : valid true")
     public void test4() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -259,6 +263,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 2 module (insa-test-simple-remote, insa-test-complex-remote) , Json : valid, Producer : valid true, Consumer : valid true")
     public void test5() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -283,6 +288,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 2 module (insa-test-simple-remote, insa-test-complex-remote) , Json : valid, Producer : valid false (only for complex), Consumer : valid true")
     public void test6() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -310,6 +316,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 2 module (insa-test-simple-local, insa-test-complex-local), Json : valid, Producer : valid true, Consumer : valid true")
     public void test7() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -325,6 +332,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 2 module (insa-test-simple-local, insa-test-complex-local), Json : invalid, Producer : valid true, Consumer : valid true")
     public void test8() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -339,6 +347,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 2 module (insa-test-simple-local, insa-test-complex-local), Json : invalid, Producer : valid false, Consumer : valid true")
     public void test9() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -354,6 +363,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 3 module (insa-test-base, insa-test-augments-1, insa-test-augments-2), Json : valid, Producer : valid true, Consumer : valid true")
     public void test10() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -369,6 +379,7 @@ public class AppTestCbor {
     }
 
     @Test
+    @Disabled("Integration test need a deployed schema registry instance. Enable test only in a controlled environment.")
     @DisplayName("Yang : 3 module (insa-test-base-1, insa-test-augments-1, insa-test-base-2), Json : valid, Producer : valid true, Consumer : valid true")
     public void test11() {
         Properties producerProperties = getDefaultProducerConfig();
@@ -382,5 +393,4 @@ public class AppTestCbor {
         JsonNode consumerNode = assertDoesNotThrow(() -> consumerGetLast(consumerProperties), ERROR_TRYING_TO_GET_DATA);
         Assertions.assertEquals(producerNode, consumerNode, JSON_NODE_AND_CONSUMER_JSON_NODE_ARE_DIFFERENT);
     }
-
 }

@@ -39,6 +39,8 @@ import java.util.Properties;
 
 public class JsonProducerExample {
 
+    public static String KAFKA_TOPIC = "yang.tests";
+
     public static void main(String[] args) throws IOException, YangParserException, DocumentException {
         System.out.println("Starting Producer");
 
@@ -63,7 +65,7 @@ public class JsonProducerExample {
         doc.validate();
 
         String key = "key1";
-        String topic = "yang.tests";
+        String topic = KAFKA_TOPIC;
 
         ProducerRecord<String, YangDataDocument> record = new ProducerRecord<>(topic, key, doc);
         try {

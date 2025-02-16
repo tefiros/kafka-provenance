@@ -22,6 +22,9 @@ import java.util.Properties;
 import static com.insa.kafka.serializers.yang.cbor.AbstractKafkaYangCborSchemaSerializer.SCHEMA_ID_KEY;
 
 public class CborConsumerExample {
+
+    public static String KAFKA_TOPIC = "yang.tests";
+
     public static void main(String[] args) {
 
         Properties consumerConfig = new Properties();
@@ -36,7 +39,7 @@ public class CborConsumerExample {
         consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         KafkaConsumer<String, YangDataDocument> consumer = new KafkaConsumer<>(consumerConfig);
-        String topic = "yang.tests";
+        String topic = KAFKA_TOPIC;
 
         consumer.subscribe(Collections.singletonList(topic));
 
@@ -44,6 +47,7 @@ public class CborConsumerExample {
             try {
                 ConsumerRecords<String, YangDataDocument> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, YangDataDocument> r : records) {
+                    System.out.println("********* CBOR Message *********");
                     // Headers
                     Headers headers = r.headers();
                     byte[] serializedSchemaId = headers.lastHeader(SCHEMA_ID_KEY).value();
@@ -56,7 +60,7 @@ public class CborConsumerExample {
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode jsonNode;
                     jsonNode = mapper.readTree(r.value().getDocString());
-                    System.out.println("Key : " + r.key() + ", Value : " + jsonNode + ", Offset : " + r.offset());
+                    System.out.println("Key : " + r.key() + ", Value (converted to JSON) : " + jsonNode + ", Offset : " + r.offset());
                 }
             } catch (RecordDeserializationException e) {
                 System.out.println("Error during deserialization : message is ignored");

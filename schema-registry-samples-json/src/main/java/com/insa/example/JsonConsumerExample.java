@@ -24,15 +24,20 @@ import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaDeserializerConfi
 import io.confluent.kafka.serializers.subject.RecordNameStrategy;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.errors.RecordDeserializationException;
-import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 
+import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
+import static com.insa.kafka.serializers.yang.cbor.AbstractKafkaYangCborSchemaSerializer.SCHEMA_ID_KEY;
+
 public class JsonConsumerExample {
+
+    public static String KAFKA_TOPIC = "yang.tests";
+
     public static void main(String[] args) {
         System.out.println("Starting Consumer");
 
@@ -49,7 +54,7 @@ public class JsonConsumerExample {
 
         // Creating Consumer
         KafkaConsumer<String, YangDataDocument> consumer = new KafkaConsumer<>(consumerConfig);
-        String topic = "yang.tests";
+        String topic = KAFKA_TOPIC;
 
         consumer.subscribe(Collections.singletonList(topic));
 
@@ -57,22 +62,26 @@ public class JsonConsumerExample {
             try {
                 ConsumerRecords<String, YangDataDocument> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, YangDataDocument> r : records) {
-                    // Read Headers
+                    System.out.println("********* JSON Message *********");
+                    // Headers
                     Headers headers = r.headers();
-                    for (Header header : headers) {
-                        System.out.println("[Header] Key: " + header.key() + ", Value: " + new String(header.value()));
-                    }
+                    byte[] serializedSchemaId = headers.lastHeader(SCHEMA_ID_KEY).value();
+                    int schemaId = ByteBuffer.wrap(serializedSchemaId).getInt();
+                    System.out.println("[Header] Key: " + SCHEMA_ID_KEY + ", Value: " + schemaId);
+                    byte[] serializedContentType = headers.lastHeader("content-type").value();
+                    System.out.println("[Header] Key: " + "content-type" + ", Value: " + new String(serializedContentType));
+
                     // Read JSON message
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode jsonNode;
                     jsonNode = mapper.readTree(r.value().getDocString());
-                    System.out.println("Clé : " + r.key() + ", Valeur : " + jsonNode + ", Offset : " + r.offset());
+                    System.out.println("Key : " + r.key() + ", Value : " + jsonNode + ", Offset : " + r.offset());
                 }
             } catch (RecordDeserializationException e) {
                 System.out.println("Error during deserialization : message is ignored");
                 consumer.seek(e.topicPartition(), e.offset() + 1L);
             } catch (JsonProcessingException ignored) {
-                System.out.println("Error reading json");
+                System.out.println("Error reading JSON");
             }
         }
 

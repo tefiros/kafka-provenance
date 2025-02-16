@@ -40,6 +40,9 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class CborProducerTelemetry {
+
+    public static String KAFKA_TOPIC = "yang.tests";
+
     public static void main(String[] args) throws DocumentException, IOException, YangParserException {
 
         // Configure Kafka producer
@@ -60,7 +63,7 @@ public class CborProducerTelemetry {
         YangSchemaContext schemaContext = YangYinParser.parse(CborProducerTelemetry.class.getClassLoader().getResource("telemetry/yangs").getFile());
         ValidatorResult result = schemaContext.validate();
         System.out.println("Schema context is valid : " + result.isOk());
-        //TODO: Missing Ahmed dependencies
+        //TODO: Missing draft-aelhassany-telemetry-msg dependencies
         for (ValidatorRecord<?, ?> record : result.getRecords()) {
             System.out.println("Error: " + record.getErrorMsg().getMessage());
         }
@@ -71,7 +74,7 @@ public class CborProducerTelemetry {
         doc.validate();
 
         String key = "key1";
-        String topic = "yang.tests";
+        String topic = KAFKA_TOPIC;
         ProducerRecord<String, YangDataDocument> record = new ProducerRecord<>(topic, key, doc);
 
         try {

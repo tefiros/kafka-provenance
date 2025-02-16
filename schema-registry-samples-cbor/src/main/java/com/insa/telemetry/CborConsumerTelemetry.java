@@ -38,6 +38,9 @@ import java.util.Properties;
 import static com.insa.kafka.serializers.yang.cbor.AbstractKafkaYangCborSchemaSerializer.SCHEMA_ID_KEY;
 
 public class CborConsumerTelemetry {
+
+    public static String KAFKA_TOPIC = "yang.tests";
+
     public static void main(String[] args) {
 
         Properties consumerConfig = new Properties();
@@ -52,7 +55,7 @@ public class CborConsumerTelemetry {
         consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         KafkaConsumer<String, YangDataDocument> consumer = new KafkaConsumer<>(consumerConfig);
-        String topic = "yang.tests";
+        String topic = KAFKA_TOPIC;
 
         consumer.subscribe(Collections.singletonList(topic));
 

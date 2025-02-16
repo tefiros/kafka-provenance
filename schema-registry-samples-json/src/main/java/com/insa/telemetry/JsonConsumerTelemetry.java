@@ -31,11 +31,17 @@ import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 
+import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
+import static com.insa.kafka.serializers.yang.cbor.AbstractKafkaYangCborSchemaSerializer.SCHEMA_ID_KEY;
+
 public class JsonConsumerTelemetry {
+
+    public static String KAFKA_TOPIC = "yang.tests";
+
     public static void main(String[] args) {
         System.out.println("Starting Telemetry Consumer (draft-aelhassany-telemetry-msg)");
 
@@ -52,7 +58,7 @@ public class JsonConsumerTelemetry {
 
         // Creating Consumer
         KafkaConsumer<String, YangDataDocument> consumer = new KafkaConsumer<>(consumerConfig);
-        String topic = "yang.tests";
+        String topic = KAFKA_TOPIC;
 
         consumer.subscribe(Collections.singletonList(topic));
 
@@ -60,11 +66,15 @@ public class JsonConsumerTelemetry {
             try {
                 ConsumerRecords<String, YangDataDocument> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, YangDataDocument> r : records) {
-                    // Read Headers
+                    System.out.println("********* JSON Message *********");
+                    // Headers
                     Headers headers = r.headers();
-                    for (Header header : headers) {
-                        System.out.println("[Header] Key: " + header.key() + ", Value: " + new String(header.value()));
-                    }
+                    byte[] serializedSchemaId = headers.lastHeader(SCHEMA_ID_KEY).value();
+                    int schemaId = ByteBuffer.wrap(serializedSchemaId).getInt();
+                    System.out.println("[Header] Key: " + SCHEMA_ID_KEY + ", Value: " + schemaId);
+                    byte[] serializedContentType = headers.lastHeader("content-type").value();
+                    System.out.println("[Header] Key: " + "content-type" + ", Value: " + new String(serializedContentType));
+
                     // Read JSON message
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode jsonNode;

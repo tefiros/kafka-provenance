@@ -38,6 +38,9 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class CborProducerExample {
+
+    public static String KAFKA_TOPIC = "yang.tests";
+
     public static void main(String[] args) throws DocumentException, IOException, YangParserException {
 
         // Configure Kafka producer
@@ -62,7 +65,7 @@ public class CborProducerExample {
         doc.validate();
 
         String key = "key1";
-        String topic = "yang.tests";
+        String topic = KAFKA_TOPIC;
         ProducerRecord<String, YangDataDocument> record = new ProducerRecord<>(topic, key, doc);
 
         try {

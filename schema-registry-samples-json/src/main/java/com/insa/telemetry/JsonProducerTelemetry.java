@@ -41,6 +41,8 @@ import java.util.Properties;
 
 public class JsonProducerTelemetry {
 
+    public static String KAFKA_TOPIC = "yang.tests";
+
     public static void main(String[] args) throws IOException, YangParserException, DocumentException {
         System.out.println("Starting Telemetry Producer (draft-aelhassany-telemetry-msg)");
 
@@ -61,18 +63,18 @@ public class JsonProducerTelemetry {
         schemaContext.validate();
         ValidatorResult result = schemaContext.validate();
         System.out.println("Schema context is valid : " + result.isOk());
-        //TODO: Missing Ahmed dependencies
+        //TODO: Missing draft-aelhassany-telemetry-msg dependencies
         for (ValidatorRecord<?, ?> record : result.getRecords()) {
             System.out.println("Error: " + record.getErrorMsg().getMessage());
         }
         // Parsing JSON
-        JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerTelemetry.class.getClassLoader().getResource("telemetry/valid.json").getFile()));
+        JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerTelemetry.class.getClassLoader().getResource("telemetry/telemetry-msg.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
         doc.validate();
 
         String key = "key1";
-        String topic = "yang.tests";
+        String topic = KAFKA_TOPIC;
         ProducerRecord<String, YangDataDocument> record = new ProducerRecord<>(topic, key, doc);
 
         try {

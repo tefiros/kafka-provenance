@@ -11,6 +11,7 @@ logs
 .idea/libraries/
 .idea/misc.xml
 .idea/vcs.xml
+.idea
 *.iws
 *.iml
 *.ipr

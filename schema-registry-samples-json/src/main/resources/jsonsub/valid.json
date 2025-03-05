@@ -1,9 +1,0 @@
-{
-  "data": {
-    "simple:insa-container": {
-      "computer": "computer",
-      "router": 234,
-      "complex:complex-key": 189
-    }
-  }
-}

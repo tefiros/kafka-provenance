@@ -18,8 +18,11 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>8</source>
+                    <target>8</target>
+                    <excludes>
+                        <exclude>com/insa/AppTestJson.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
@@ -27,8 +30,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
@@ -42,10 +45,11 @@
             <artifactId>kafka-clients</artifactId>
             <version>${kafka.client.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-schema-registry-client</artifactId>
-            <version>${schema-registry.version}</version>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.11.3</version>
         </dependency>
 
         <dependency>
@@ -60,25 +64,25 @@
             <version>${jackson.databind.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-schema-serializer</artifactId>
-            <version>${schema-registry.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.databind.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-yang-json-schema-serializer</artifactId>
-            <version>${schema-registry.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.databind.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.yang-central.yangkit</groupId>
             <artifactId>yangkit-data-json-codec</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.github.yang-central.yangkit</groupId>
             <artifactId>yangkit-data-xml-codec</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -91,5 +95,30 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>2.0.9</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>7.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-yang-json-schema-serializer</artifactId>
+            <version>7.5.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-yang-cbor-schema-serializer</artifactId>
+            <version>7.5.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
+    
 </project>

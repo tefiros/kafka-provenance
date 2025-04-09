@@ -130,7 +130,8 @@ public class Consumer {
         log.info("Welcome to the Kafka Consumer");
 
         String groupId = "kafka-consumer-test";
-        String topic = "xml_topic";
+        // String topic = "xml_topic";
+        String topic = "json_topic";
 
         // Create Consumer Properties
         Properties properties = new Properties();
@@ -147,7 +148,8 @@ public class Consumer {
         consumer.subscribe(Collections.singletonList(topic));
         log.info("Subscribed to topic: {}", topic);
 
-        Signer signer = new Signer();
+        //XMLSigner signer = new XMLSigner();
+        JSONSigner signer = new JSONSigner();
 
         try {
             while (true) {

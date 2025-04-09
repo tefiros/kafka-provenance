@@ -4,7 +4,7 @@ import com.telefonica.cose.provenance.*;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 
-public class Signer {
+public class XMLSigner {
 
     static {
         org.apache.xml.security.Init.init();
@@ -13,8 +13,8 @@ public class Signer {
     public void process(String value) throws Exception {
 
 
-        SignatureInterface sign = new Signature();
-        EnclosingMethodInterface enc = new EnclosingMethods();
+        XMLSignatureInterface sign = new XMLSignature();
+        XMLEnclosingMethodInterface enc = new XMLEnclosingMethods();
         Parameters params = new Parameters();
 
         String signature = sign.signing(value, params.getProperty("kid"));

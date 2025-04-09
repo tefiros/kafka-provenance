@@ -23,8 +23,8 @@ public class Producer {
         log.info("Welcome to the Kafka Producer");
 
         String bootstrapServers = "localhost:9092";
-        String topic = "xml_topic";
-        String filePath = "ietf-interfaces.xml";
+        String topic = "json_topic";
+        String filePath = "example.json";
 
         String message = Files.readString(Paths.get(filePath));
 
@@ -51,7 +51,14 @@ public class Producer {
 
         //send data
 
-        producer.send(producerRecord);
+        producer.send(producerRecord, (metadata, exception) -> {
+            if (exception != null) {
+                log.error("Error while producing", exception);
+            } else {
+                log.info("Produced record to topic {} partition {} @ offset {}",
+                        metadata.topic(), metadata.partition(), metadata.offset());
+            }
+        });
 
         //flush and close the producer
         producer.flush();
@@ -68,8 +75,5 @@ public class Producer {
             return null;
         }
     }
-
-
-
 
 }

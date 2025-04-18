@@ -63,15 +63,16 @@ public class JsonProducerTelemetry {
         schemaContext.validate();
         ValidatorResult result = schemaContext.validate();
         System.out.println("Schema context is valid : " + result.isOk());
-        //TODO: Missing draft-aelhassany-telemetry-msg dependencies
-        for (ValidatorRecord<?, ?> record : result.getRecords()) {
-            System.out.println("Error: " + record.getErrorMsg().getMessage());
-        }
+
         // Parsing JSON
         JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerTelemetry.class.getClassLoader().getResource("telemetry/telemetry-msg.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
-        doc.validate();
+        doc.update();
+        ValidatorResult validatorResult = validatorResultBuilder.build();
+        System.out.println("Is JSON valid? " + validatorResult.isOk());
+        ValidatorResult validatorResult1 = doc.validate();
+        System.out.println("Is JSON valid? " + validatorResult1.isOk());
 
         String key = "key1";
         String topic = KAFKA_TOPIC;

@@ -26,6 +26,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.dom4j.DocumentException;
+import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 import org.yangcentral.yangkit.data.codec.json.YangDataDocumentJsonParser;
@@ -62,7 +63,11 @@ public class JsonProducerExample {
         JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerExample.class.getClassLoader().getResource("example/valid.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
-        doc.validate();
+        doc.update();
+        ValidatorResult validatorResult = validatorResultBuilder.build();
+        System.out.println("JSON valid? " + validatorResult.isOk());
+        ValidatorResult validatorResult1 = doc.validate();
+        System.out.println("JSON valid? " + validatorResult1.isOk());
 
         String key = "key1";
         String topic = KAFKA_TOPIC;

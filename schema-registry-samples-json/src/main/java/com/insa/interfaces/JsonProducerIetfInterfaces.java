@@ -58,21 +58,21 @@ public class JsonProducerIetfInterfaces {
         // Creating producer
         KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
 
-        // Parsing YANGs and JSON
+        // Parsing YANGs
         YangSchemaContext schemaContext = YangYinParser.parse(JsonProducerIetfInterfaces.class.getClassLoader().getResource("interfaces/yang").getFile());
         ValidatorResult validatorResult = schemaContext.validate();
-        System.out.println(schemaContext.getModules().size());
-        System.out.println(validatorResult.isOk());
-        for (ValidatorRecord<?, ?> record : validatorResult.getRecords()) {
-            System.out.println("error: " + record.getErrorMsg().getMessage());
-        }
+        System.out.println("YANG modules valid? " + validatorResult.isOk());
 
+        // Parsing JSON
         JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerIetfInterfaces.class.getClassLoader().getResource("interfaces/json/valid.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
-        ValidatorResult validatorResult1 = doc.validate();
+        doc.update();
+        ValidatorResult validatorResult1 = validatorResultBuilder.build();
+        System.out.println("JSON valid? " + validatorResult1.isOk());
 
-        System.out.println(validatorResult1.isOk());
+        ValidatorResult validatorResult2 = doc.validate();
+        System.out.println("JSON valid? " + validatorResult2.isOk());
 
         String key = "key1";
         String topic = KAFKA_TOPIC;
@@ -81,8 +81,7 @@ public class JsonProducerIetfInterfaces {
         try {
             producer.send(record);
         } catch (SerializationException e) {
-            e.printStackTrace();
-//            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
         } finally {
             producer.flush();
             producer.close();

@@ -5,7 +5,7 @@ Sample code showcasing how JSON [[RFC7951]](https://datatracker.ietf.org/doc/htm
 
 ## Dependencies
 - Kafka (Tested with 7.5.1-post) [[Repository]](https://github.com/confluentinc/kafka/tree/7.5.0-post)
-- YangKit [[Repository]](https://github.com/yang-central/yangkit)
+- YangKit [[Repository (branch feature/yangkit-complete-validation)]](https://github.com/network-analytics/yangkit/tree/feature/yangkit-complete-validation)
 - Confluent Schema Registry with YANG integration [[Repository (branch feature/schemaid-kafka-header)]](https://github.com/network-analytics/schema-registry-dev/tree/feature/schemaid-kafka-header)
 
 ## Quickstart

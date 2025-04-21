@@ -4,8 +4,9 @@
     <parent>
         <groupId>com.insa</groupId>
         <artifactId>schema-registry-samples</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
+    <version>1.0</version>
 
     <artifactId>schema-registry-samples-cbor</artifactId>
 
@@ -16,10 +17,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.14.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <excludes>
                         <exclude>com/insa/AppTestCbor.java</exclude>
                     </excludes>
@@ -47,6 +48,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>io.github.yang-central.yangkit</groupId>
+            <artifactId>yangkit-data-json-codec</artifactId>
+            <version>${yangkit.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.databind.version}</version>
@@ -60,18 +67,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.databind.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.yang-central.yangkit</groupId>
-            <artifactId>yangkit-data-json-codec</artifactId>
-            <version>1.4.5</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.yang-central.yangkit</groupId>
-            <artifactId>yangkit-data-xml-codec</artifactId>
-            <version>1.4.5</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -88,22 +83,10 @@
             <artifactId>antlr4-runtime</artifactId>
             <version>${antlr4.runtime.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-avro-serializer</artifactId>
-            <version>7.5.1</version>
-        </dependency>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-yang-json-schema-serializer</artifactId>
-            <version>7.5.1</version>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-yang-cbor-schema-serializer</artifactId>
-            <version>7.5.1</version>
+            <version>${schema.registry.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

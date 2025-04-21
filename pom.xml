@@ -4,36 +4,16 @@
 
     <groupId>com.insa</groupId>
     <artifactId>schema-registry-samples</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>pom</packaging>
+    <organization>
+        <name>INSA Lyon</name>
+        <url>https://www.insa-lyon.fr</url>
+    </organization>
+    <inceptionYear>2024</inceptionYear>
 
     <name>schema-registry-samples</name>
-
     <description>Kafka producer/consumer samples for testing YANG integration into Schema Registry</description>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <yangkit.version>1.4.5</yangkit.version>
-        <schema-registry.version>7.5.0-0</schema-registry.version>
-        <kafka.client.version>3.6.0</kafka.client.version>
-        <junit.version>5.9.1</junit.version>
-        <jackson.databind.version>2.15.2</jackson.databind.version>
-        <antlr4.runtime.version>4.11.1</antlr4.runtime.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
-
-    <modules>
-        <module>schema-registry-samples-json</module>
-        <module>schema-registry-samples-cbor</module>
-    </modules>
-
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
 
     <developers>
         <developer>
@@ -44,7 +24,6 @@
                 <role>Project Lead</role>
             </roles>
         </developer>
-
         <developer>
             <id>BVivek974</id>
             <name>Vivekananda BOUDIA</name>
@@ -54,12 +33,67 @@
             </roles>
         </developer>
     </developers>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/network-analytics/schema-registry-samples</url>
+        <connection>git@github.com:network-analytics/schema-registry-samples.git</connection>
+    </scm>
+
+    <properties>
+        <java.version>11</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <yangkit.version>1.4.5</yangkit.version>
+        <schema.registry.version>7.5.1</schema.registry.version>
+        <kafka.client.version>3.6.0</kafka.client.version>
+        <junit.version>5.9.1</junit.version>
+        <jackson.databind.version>2.15.2</jackson.databind.version>
+        <antlr4.runtime.version>4.11.1</antlr4.runtime.version>
+    </properties>
+
+    <modules>
+        <module>schema-registry-samples-json</module>
+        <module>schema-registry-samples-cbor</module>
+    </modules>
 
     <repositories>
         <repository>
             <id>confluent</id>
+            <name>Confluent Maven repository</name>
             <url>https://packages.confluent.io/maven/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
-    
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.14.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/network-analytics/</url>
+        </repository>
+    </distributionManagement>
 </project>

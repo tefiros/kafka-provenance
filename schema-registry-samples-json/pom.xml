@@ -4,8 +4,9 @@
     <parent>
         <groupId>com.insa</groupId>
         <artifactId>schema-registry-samples</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
+    <version>1.0</version>
 
     <artifactId>schema-registry-samples-json</artifactId>
 
@@ -16,10 +17,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.14.0</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <excludes>
                         <exclude>com/insa/AppTestJson.java</exclude>
                     </excludes>
@@ -45,16 +46,15 @@
             <artifactId>kafka-clients</artifactId>
             <version>${kafka.client.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>1.11.3</version>
-        </dependency>
-
         <dependency>
             <groupId>io.github.yang-central.yangkit</groupId>
             <artifactId>yangkit-parser</artifactId>
+            <version>${yangkit.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.yang-central.yangkit</groupId>
+            <artifactId>yangkit-data-json-codec</artifactId>
             <version>${yangkit.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -72,18 +72,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.databind.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.yang-central.yangkit</groupId>
-            <artifactId>yangkit-data-json-codec</artifactId>
-            <version>1.4.5</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.yang-central.yangkit</groupId>
-            <artifactId>yangkit-data-xml-codec</artifactId>
-            <version>1.4.5</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -104,18 +92,18 @@
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
-            <version>7.5.0</version>
+            <version>${schema.registry.version}</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-yang-json-schema-serializer</artifactId>
-            <version>7.5.1</version>
+            <version>${schema.registry.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-yang-cbor-schema-serializer</artifactId>
-            <version>7.5.1</version>
+            <version>${schema.registry.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

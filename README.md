@@ -37,6 +37,7 @@ Create Kafka topic:
 
 JSON Examples (`schema-registry-samples-json`):
 - `JsonProducerExample` and `JsonConsumerExample` show simple examples for producing YANG-JSON messages with the associated YANG modules.
+- `JsonProducerIetfInterfaces` and `JsonConsumerIetfInterfaces` implement a producer and consumer for [ietf-interfaces.yang](schema-registry-samples-json/src/main/resources/interfaces/yang/ietf-interfaces@2018-02-20.yang).
 - `JsonProducerTelemetry` and `JsonConsumerTelemetry` produce and consume YANG-JSON messages according to the model defined in [draft-aelhassany-telemetry-msg](https://github.com/network-analytics/draft-aelhassany-telemetry-msg)
 
 CBOR Examples (`schema-registry-samples-cbor`):

@@ -62,6 +62,7 @@ public class CborProducerExample {
         JsonNode jsonNode = new ObjectMapper().readTree(new File(CborProducerExample.class.getClassLoader().getResource("example/valid.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
+        doc.update();
         doc.validate();
 
         String key = "key1";

@@ -71,6 +71,7 @@ public class CborProducerTelemetry {
         JsonNode jsonNode = new ObjectMapper().readTree(new File(CborProducerTelemetry.class.getClassLoader().getResource("telemetry/telemetry-msg.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
+        doc.update();
         doc.validate();
 
         String key = "key1";

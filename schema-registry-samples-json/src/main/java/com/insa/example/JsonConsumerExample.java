@@ -76,6 +76,9 @@ public class JsonConsumerExample {
                     JsonNode jsonNode;
                     jsonNode = mapper.readTree(r.value().getDocString());
                     System.out.println("Key : " + r.key() + ", Value : " + jsonNode + ", Offset : " + r.offset());
+                    JsonNode unwrappedJSON = DataManagement.unwrapData(jsonNode);
+                    System.out.println("Unwrapped json: " + unwrappedJSON.toPrettyString());
+
                 }
             } catch (RecordDeserializationException e) {
                 System.out.println("Error during deserialization : message is ignored");

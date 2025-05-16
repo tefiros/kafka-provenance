@@ -18,6 +18,7 @@ package com.insa.interfaces;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.insa.example.DataManagement;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializer;
 import com.insa.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
 import io.confluent.kafka.serializers.subject.RecordNameStrategy;
@@ -64,9 +65,10 @@ public class JsonProducerIetfInterfaces {
         System.out.println("YANG modules valid? " + validatorResult.isOk());
 
         // Parsing JSON
-        JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerIetfInterfaces.class.getClassLoader().getResource("interfaces/json/valid.json").getFile()));
+        JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerIetfInterfaces.class.getClassLoader().getResource("interfaces/json/draft_2.json").getFile()));
+        JsonNode wrappedNode = DataManagement.wrapInData(jsonNode);
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
-        YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
+        YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(wrappedNode, validatorResultBuilder);
         doc.update();
         ValidatorResult validatorResult1 = validatorResultBuilder.build();
         System.out.println("JSON valid? " + validatorResult1.isOk());
@@ -87,7 +89,7 @@ public class JsonProducerIetfInterfaces {
             producer.close();
         }
 
-        System.out.println("Sent message " + jsonNode);
+        System.out.println("Sent message " + "check record");
         System.out.println("End producer !");
     }
 }

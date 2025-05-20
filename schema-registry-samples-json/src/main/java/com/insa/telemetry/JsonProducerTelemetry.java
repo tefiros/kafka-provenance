@@ -59,13 +59,13 @@ public class JsonProducerTelemetry {
         KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
 
         // Parsing YANGs
-        YangSchemaContext schemaContext = YangYinParser.parse(JsonProducerTelemetry.class.getClassLoader().getResource("telemetry/yangs").getFile());
+        YangSchemaContext schemaContext = YangYinParser.parse(JsonProducerTelemetry.class.getClassLoader().getResource("notification/yangs").getFile());
         schemaContext.validate();
         ValidatorResult result = schemaContext.validate();
         System.out.println("Schema context is valid : " + result.isOk());
 
         // Parsing JSON
-        JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerTelemetry.class.getClassLoader().getResource("telemetry/telemetry-msg.json").getFile()));
+        JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerTelemetry.class.getClassLoader().getResource("notification/notif2.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
         doc.update();

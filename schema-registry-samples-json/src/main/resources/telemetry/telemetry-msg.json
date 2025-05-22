@@ -1,60 +1,58 @@
 {
-  "data": {
-    "ietf-telemetry-message:message": {
-      "timestamp": "2024-02-14T12:10:10.12+01:00",
-      "session-protocol": "netconf",
-      "node": {
-        "address": "127.0.0.1",
-        "port": 123,
-        "platform-name": "core",
-        "vendor": "open source",
-        "software-version": "1.1.2"
-      },
-      "collector": {
-        "address": "127.0.0.1",
-        "port": 4566,
-        "platform-name": "telemetery",
-        "vendor": "open source",
-        "software-version": "2.1.0"
-      },
-      "session-metadata": {
-        "event-time": "2024-02-14T12:10:10.10+01:00",
-        "ietf-yang-push-telemetry-message:yang-push-subscription": {
-          "id": 123,
-          "filters": {
-            "stream-filter": [
+  "ietf-telemetry-message:message": {
+    "timestamp": "2024-02-14T12:10:10.12+01:00",
+    "session-protocol": "yp-push",
+    "network-node-manifest": {
+      "name": "pe1",
+      "vendor": "open source",
+      "software-version": "1.1.2"
+    },
+    "data-collection-manifest": {
+      "name": "collector-1",
+      "vendor": "open source",
+      "software-version": "2.1.0"
+    },
+    "telemetry-message-metadata": {
+      "event-time": "2024-02-14T12:10:10.10+01:00",
+      "ietf-yang-push-telemetry-message:yang-push-subscription": {
+        "id": 89,
+        "xpath-filter": "/ietf-interfaces:interfaces",
+        "datastore": "ietf-datastores:operational",
+        "transport": "ietf-udp-notif-transport:udp-notif",
+        "encoding": "ietf-subscribed-notifications:encode-json",
+        "module-version": [
+          {
+            "module-name": "ietf-interfaces",
+            "revision": "2018-02-20",
+            "revision-label": "2.0.0"
+          }
+        ],
+        "yang-library-content-id": "abc"
+      }
+    },
+    "data-collection-metadata": {
+      "remote-address": "192.168.1.100",
+      "remote-port": 123,
+      "local-address": "192.168.1.1",
+      "local-port": 9991,
+      "labels": [
+        {
+          "name": "platform-name",
+          "string-value": "name"
+        }
+      ]
+    },
+    "payload": {
+      "ietf-yang-push:push-update": {
+        "id": 89,
+        "datastore-contents": {
+          "ietf-interfaces:interfaces": {
+            "interface": [
               {
-                "name": "first-fitler",
-                "stream-xpath-filter": "/some/tree"
+                "name": "eth0",
+                "oper-status": "down"
               }
             ]
-          }
-        }
-      },
-      "metadata": {
-        "labels": [
-          {
-            "name": "platform-name",
-            "string-value": "name"
-          }
-        ]
-      },
-      "payload": {
-        "ietf-yang-push:push-update": {
-          "id": 89,
-          "datastore-contents": {
-            "ietf-interfaces:interfaces": {
-              "interface": [{
-                "name": "eth0",
-                "type": "iana-if-type:ethernetCsmacd",
-                "if-index": 1,
-                "admin-status": "up",
-                "oper-status": "up",
-                "statistics": {
-                  "discontinuity-time": "2014-07-29T13:43:12Z"
-                }
-              }]
-            }
           }
         }
       }

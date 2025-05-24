@@ -26,6 +26,23 @@ module ietf-yang-push-revision {
       "RFC ZZZZ: draft-ietf-netmod-yang-semver-15, YANG Semantic
       Versioning";
   }
+  import ietf-yang-library {
+    prefix yanglib;
+    reference
+      "RFC 8525: YANG Library";
+  }
+  import ietf-system-capabilities {
+    prefix sysc;
+    reference
+      "RFC 9196: YANG Modules Describing Capabilities for
+       Systems and Datastore Update Notifications";
+  }
+  import ietf-notification-capabilities {
+    prefix notc;
+    reference
+      "RFC 9196: YANG Modules Describing Capabilities for
+       Systems and Datastore Update Notifications";
+  }
 
   organization "IETF NETCONF (Network Configuration) Working Group";
   contact
@@ -40,23 +57,28 @@ module ietf-yang-push-revision {
                <mailto:alex.huang-feng@insa-lyon.fr>";
 
   description
-    "Defines YANG push event notification header with the revision and
+    "Defines YANG-Push event notification header with the revision and
     the revision-label. Adds the support of the revision and
-    revision-label selection in the YANG push subscription RPCs.
+    revision-label selection in the YANG-Push subscription RPCs.
 
-    Copyright (c) 2023 IETF Trust and the persons identified as
-    authors of the code.  All rights reserved.
+    Copyright (c) 2025 IETF Trust and the persons
+    identified as authors of the code.  All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, is permitted pursuant to, and subject to the license
-    terms contained in, the Revised BSD License set forth in Section
-    4.c of the IETF Trust's Legal Provisions Relating to IETF Documents
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject
+    to the license terms contained in, the Revised BSD License
+    set forth in Section 4.c of the IETF Trust's Legal Provisions
+    Relating to IETF Documents
     (https://trustee.ietf.org/license-info).
+
+    All revisions of IETF and IANA published modules can be found
+    at the YANG Parameters registry
+    (https://www.iana.org/assignments/yang-parameters).
 
     This version of this YANG module is part of RFC XXXX; see the RFC
     itself for full legal notices.";
 
-  revision 2024-06-16 {
+  revision 2025-04-05 {
     description
       "First revision";
     reference
@@ -84,7 +106,7 @@ module ietf-yang-push-revision {
     base sn:establish-subscription-error;
     base sn:modify-subscription-error;
     description
-      "Revision-label not supported.  This failure can be due to
+      "Revision-label not supported.  This failure can be due to 
       subscribing to a specific revision-label not supported by the publisher.";
   }
 
@@ -127,7 +149,7 @@ module ietf-yang-push-revision {
     description
       "This grouping combines the module name, the revision and
       revision-label leaves. This grouping is to be used for
-      read-only cases such as the content of YANG push Notifications.
+      read-only cases such as the content of YANG-Push Notifications.
       The module-name and revision are mandatory and MUST be present
       in the data.";
     leaf module-name {
@@ -164,6 +186,15 @@ module ietf-yang-push-revision {
         "List of yang-push-module-version grouping. The revision is
         not configurable.";
       uses ypr:yang-push-module-version;
+    }
+    leaf yang-library-content-id {
+      config false;
+      type leafref {
+        path "/yanglib:yang-library/yanglib:content-id";
+      }
+      description
+        "Contains the YANG library content identifier RFC 8525
+        information.";
     }
   }
 
@@ -224,5 +255,20 @@ module ietf-yang-push-revision {
       ietf-subscribed-notifications YANG module with the
       yang-push-module-version-config-list grouping.";
     uses ypr:yang-push-module-version-config-list;
+  }
+
+  // Event capabilities
+  augment "/sysc:system-capabilities/notc:subscription-capabilities" {
+    description
+      "Add system level capabilities";
+    leaf yang-push-module-revision-supported {
+      type boolean;
+      description
+        "Specifies whether the publisher supports exporting
+        revision and revision-label in YANG-Push subscription state change
+	notifications.";
+      reference
+        "RFC XXXX: Support of Versioning in YANG Notifications Subscription";
+    }
   }
 }

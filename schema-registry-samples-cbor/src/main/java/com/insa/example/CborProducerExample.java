@@ -26,6 +26,9 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.dom4j.DocumentException;
+import org.yangcentral.yangkit.common.api.exception.Severity;
+import org.yangcentral.yangkit.common.api.validate.ValidatorRecord;
+import org.yangcentral.yangkit.common.api.validate.ValidatorResult;
 import org.yangcentral.yangkit.common.api.validate.ValidatorResultBuilder;
 import org.yangcentral.yangkit.data.api.model.YangDataDocument;
 import org.yangcentral.yangkit.data.codec.json.YangDataDocumentJsonParser;
@@ -57,13 +60,38 @@ public class CborProducerExample {
         // Create producer
         KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
 
-        YangSchemaContext schemaContext = YangYinParser.parse(CborProducerExample.class.getClassLoader().getResource("example/test.yang").getFile());
-        schemaContext.validate();
+        // Parsing YANGs
+        YangSchemaContext schemaContext = YangYinParser.parse(CborProducerExample.class.getClassLoader().getResource("example/yang").getFile());
+        ValidatorResult result = schemaContext.validate();
+        System.out.println("Schema context is valid : " + result.isOk() + "; " + schemaContext.getModules().size());
+        if (!result.isOk()) {
+            for (ValidatorRecord<?, ?> record : result.getRecords()) {
+                if (record.getSeverity() == Severity.ERROR) {
+                    System.out.println(record.getErrorMsg().getMessage() + " - " + record.getBadElement());
+                }
+            }
+        }
+
+        // Parsing JSON
         JsonNode jsonNode = new ObjectMapper().readTree(new File(CborProducerExample.class.getClassLoader().getResource("example/valid.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
         doc.update();
-        doc.validate();
+        ValidatorResult validatorResult = validatorResultBuilder.build();
+        System.out.println("Is CBOR valid? " + validatorResult.isOk());
+        if (!validatorResult.isOk()) {
+            for (ValidatorRecord<?, ?> record : validatorResult.getRecords()) {
+                System.out.println(record.getSeverity() + ":" + record.getErrorMsg().getMessage() + " - " + record.getBadElement());
+            }
+        }
+
+        ValidatorResult validatorResult1 = doc.validate();
+        System.out.println("Is CBOR valid? " + validatorResult1.isOk());
+        if (!validatorResult1.isOk()) {
+            for (ValidatorRecord<?, ?> record : validatorResult1.getRecords()) {
+                System.out.println(record.getSeverity() + ":" + record.getErrorMsg().getMessage());
+            }
+        }
 
         String key = "key1";
         String topic = KAFKA_TOPIC;

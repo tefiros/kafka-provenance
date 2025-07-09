@@ -4,8 +4,11 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,6 +147,16 @@ public class Consumer {
         // Create the consumer
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 
+        // Create Producer Properties
+        Properties producerProps = new Properties();
+        producerProps.setProperty("bootstrap.servers", "localhost:9092");
+        producerProps.setProperty("key.serializer", StringSerializer.class.getName());
+        producerProps.setProperty("value.serializer", StringSerializer.class.getName());
+
+
+        // Create the producer
+        KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps);
+
         // Subscribe to the topic
         consumer.subscribe(Collections.singletonList(topic));
         log.info("Subscribed to topic: {}", topic);
@@ -162,14 +175,35 @@ public class Consumer {
                     log.info("Found {} records.", records.count());
                 }
 
-                records.forEach(record -> {
+//                records.forEach(record -> {
+//                    log.info("Received record: key = {}, value = {}", record.key(), record.value());
+//                    try {
+//                        signer.process(record.value());
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                });
+
+                for (ConsumerRecord<String, String> record : records) {
                     log.info("Received record: key = {}, value = {}", record.key(), record.value());
                     try {
-                        signer.process(record.value());
+                        String signedMessage = signer.process(record.value());
+
+                        // Enviar mensaje firmado al nuevo topic
+                        String outputTopic = "json_signed_topic";
+                        ProducerRecord<String, String> signedRecord = new ProducerRecord<>(outputTopic, record.key(), signedMessage);
+                        producer.send(signedRecord, (metadata, exception) -> {
+                            if (exception == null) {
+                                log.info("Message sent to topic {} partition {} offset {}", metadata.topic(), metadata.partition(), metadata.offset());
+                            } else {
+                                log.error("Error while sending message", exception);
+                            }
+                        });
+
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        log.error("Error processing record", e);
                     }
-                });
+                }
 
                 // Commit offsets (optional) ---> i
                 //consumer.commitSync(); no va a leer los leídos anteriormente

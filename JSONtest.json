@@ -1,31 +1,19 @@
 {
-  "ietf-interfaces:interfaces-state" : {
-    "interface" : {
-      "name" : "GigabitEthernet1",
-      "iana-if-type:type" : "ianaift:ethernetCsmacd",
-      "admin-status" : "up",
-      "oper-status" : "up",
-      "last-change" : "2024-02-03T11:22:41.081+00:00",
-      "if-index" : 1,
-      "phys-address" : "0c:00:00:37:d6:00",
-      "speed" : 1000000000,
-      "statistics" : {
-        "discontinuity-time" : "2024-02-03T11:20:38+00:00",
-        "in-octets" : 8157,
-        "in-unicast-pkts" : 94,
-        "in-broadcast-pkts" : 0,
-        "in-multicast-pkts" : 0,
-        "in-discards" : 0,
-        "in-errors" : 0,
-        "in-unknown-protos" : 0,
-        "out-octets" : 89363,
-        "out-unicast-pkts" : 209,
-        "out-broadcast-pkts" : 0,
-        "out-multicast-pkts" : 0,
-        "out-discards" : 0,
-        "out-errors" : 0
+  "ietf-yp-notification:envelope" : {
+    "event-time" : "2024-10-10T08:00:11.22Z",
+    "contents" : {
+      "ietf-yang-push:push-update" : {
+        "id" : 1011,
+        "datastore-contents" : {
+          "ietf-interfaces:interfaces" : [ {
+            "interface" : {
+              "name" : "eth0",
+              "oper-status" : "up"
+            }
+          } ]
+        }
       }
     },
-    "provenance-string" : "0oRRowEmA2N4bWwEZ2VjMi5rZXmg9lhAx0OHhgSgbqetX6YH+OSapbEicIqXo8LgS7XNdrXLld5whW0E6Ppar4D+TjO5X8OvEMf5WXIeBPoeSVOhFV/Aog=="
+    "ietf-yp-provenance:provenance" : "0oRRowEmA2N4bWwEZ2VjMi5rZXmg9lhAc1dHoyvosYU0FRRytRZFrJiikgbDP1Jk1VEABp2LpSPUhb8AhE7uE1VD5orGK1y5ATc/mx9iIrQqYsoEK9xXsw=="
   }
 }

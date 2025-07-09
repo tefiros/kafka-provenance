@@ -24,7 +24,7 @@ public class Producer {
 
         String bootstrapServers = "localhost:9092";
         String topic = "json_topic";
-        String filePath = "example.json";
+        String filePath = "json-notif.json";
 
         String message = Files.readString(Paths.get(filePath));
 

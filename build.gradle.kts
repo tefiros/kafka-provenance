@@ -49,7 +49,7 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.17")
 
 
-    implementation("com.telefonica.api:provenance-api:0.0.3")
+    implementation("com.telefonica.api:provenance-api:0.0.4")
 
 
 

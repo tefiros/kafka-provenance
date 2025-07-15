@@ -44,21 +44,23 @@ public class Producer {
         //create the Producer
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
-        //create a Producer record
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, message);
-
-
 
         //send data
 
-        producer.send(producerRecord, (metadata, exception) -> {
-            if (exception != null) {
-                log.error("Error while producing", exception);
-            } else {
-                log.info("Produced record to topic {} partition {} @ offset {}",
-                        metadata.topic(), metadata.partition(), metadata.offset());
-            }
-        });
+        // Enviar el mismo mensaje varias veces
+        for (int i = 1; i <= 10; i++) {
+            ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, message);
+
+            int finalI = i;
+            producer.send(producerRecord, (metadata, exception) -> {
+                if (exception != null) {
+                    log.error("Error while producing message #{}", finalI, exception);
+                } else {
+                    log.info("Produced message #{} to topic {} partition {} @ offset {}",
+                            finalI, metadata.topic(), metadata.partition(), metadata.offset());
+                }
+            });
+        }
 
         //flush and close the producer
         producer.flush();

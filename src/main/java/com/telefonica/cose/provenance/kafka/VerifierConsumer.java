@@ -16,12 +16,14 @@ import java.security.Security;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.Random;
 
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import static com.telefonica.cose.provenance.kafka.MessageCorruption.tamperAtSecondLevel;
 
 
 public class VerifierConsumer {
@@ -64,6 +66,8 @@ public class VerifierConsumer {
         ObjectMapper mapper = new ObjectMapper();
         JSONVerificationInterface verifier = new JSONVerification();
 
+        Random random = new Random();
+
         try {
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(3000));
@@ -74,13 +78,26 @@ public class VerifierConsumer {
 
                     try {
                         JsonNode doc = mapper.readTree(message);
-                        boolean valid = verifier.verify(doc);
 
+                        // Añadido randomizador
+                        boolean applyTampering = random.nextBoolean(); // 50% de probabilidad
+                        JsonNode processedNode = applyTampering ? tamperAtSecondLevel(doc) : doc;
+
+                        // Mensaje debug
+                        if (applyTampering) {
+                            log.info("✅ Tampering applied to message");
+                        } else {
+                            log.info("🚫 No tampering applied — verifying original message");
+                        }
+
+                        String processedString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(processedNode);
+                        boolean valid = verifier.verify(processedNode);
                         String destinationTopic = valid ? validTopic : invalidTopic;
+
 
                         // Reenviar mensaje al topic correspondiente
                         ProducerRecord<String, String> newRecord =
-                                new ProducerRecord<>(destinationTopic, record.key(), message);
+                                new ProducerRecord<>(destinationTopic, record.key(), processedString);
 
                         producer.send(newRecord, (metadata, exception) -> {
                             if (exception != null) {

@@ -1,34 +1,34 @@
 package com.telefonica.cose.provenance.kafka;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.kafka.clients.consumer.*;
+import COSE.CoseException;
+import com.telefonica.cose.provenance.XMLVerification;
+import com.telefonica.cose.provenance.XMLVerificationInterface;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jdom2.Document;
+import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.telefonica.cose.provenance.JSONVerification;
-import com.telefonica.cose.provenance.JSONVerificationInterface;
-import COSE.CoseException;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
+import java.io.StringReader;
 import java.security.Security;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.Random;
 
-import org.apache.kafka.clients.consumer.*;
-import org.apache.kafka.clients.producer.*;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
-
-import static com.telefonica.cose.provenance.kafka.MessageCorruption.tamperAtSecondLevel;
+import static com.telefonica.cose.provenance.kafka.MessageCorruption.*;
 
 
-public class VerifierConsumer {
+public class XMLVerifierConsumer {
 
-    private static final Logger log = LoggerFactory.getLogger(VerifierConsumer.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(XMLVerifierConsumer.class.getSimpleName());
 
     static {
         // Inicializar librerías necesarias
@@ -40,9 +40,9 @@ public class VerifierConsumer {
         log.info("Starting VerifierConsumer...");
 
         // Kafka topic settings
-        String inputTopic = "json_signed_messages";
-        String validTopic = "valid_messages";
-        String invalidTopic = "invalid_messages";
+        String inputTopic = "xml_signed_messages";
+        String validTopic = "xml_valid_messages";
+        String invalidTopic = "xml_invalid_messages";
 
         // Kafka consumer config
         Properties consumerProps = new Properties();
@@ -63,8 +63,8 @@ public class VerifierConsumer {
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JSONVerificationInterface verifier = new JSONVerification();
+        SAXBuilder saxBuilder = new SAXBuilder();
+        XMLVerificationInterface verifier = new XMLVerification();
 
         Random random = new Random();
 
@@ -77,21 +77,22 @@ public class VerifierConsumer {
                     log.info("Received signed message:\n{}", message);
 
                     try {
-                        JsonNode doc = mapper.readTree(message);
+                        Document doc = saxBuilder.build(new StringReader(message));
+
 
                         // Añadido randomizador
                         boolean applyTampering = random.nextBoolean(); // 50% de probabilidad
-                        JsonNode processedNode = applyTampering ? tamperAtSecondLevel(doc) : doc;
+                        Document processedDoc = applyTampering ? tamperAtSecondLevelXML(doc) : doc;
 
                         // Mensaje debug
                         if (applyTampering) {
-                            log.info("✅ Tampering applied to message");
+                            log.info("Tampering applied to message");
                         } else {
-                            log.info("🚫 No tampering applied — verifying original message");
+                            log.info("No tampering applied — verifying original message");
                         }
 
-                        String processedString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(processedNode);
-                        boolean valid = verifier.verify(processedNode);
+                        String processedString = toPrettyString(processedDoc);
+                        boolean valid = verifier.verify(processedDoc);
                         String destinationTopic = valid ? validTopic : invalidTopic;
 
 

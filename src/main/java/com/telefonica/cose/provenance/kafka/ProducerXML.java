@@ -6,25 +6,23 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.Properties;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 
-public class Producer {
+public class ProducerXML {
 
-    private static final Logger log = LoggerFactory.getLogger(Producer.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(ProducerXML.class.getSimpleName());
 
 
     public static void main(String[] args) throws IOException {
         log.info("Welcome to the Kafka Producer");
 
         String bootstrapServers = "localhost:9092";
-        String topic = "json_telemetry_messages";
-        String filePath = "json-notif.json";
+        String topic = "xml_telemetry_messages";
+        String filePath = "ietf-interfaces.xml";
 
         String message = Files.readString(Paths.get(filePath));
 
@@ -66,6 +64,7 @@ public class Producer {
         producer.flush();
         producer.close();
     }
+
 
 
 }

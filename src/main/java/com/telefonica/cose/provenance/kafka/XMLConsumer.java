@@ -3,32 +3,27 @@ package com.telefonica.cose.provenance.kafka;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Properties;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
 
-public class Consumer {
+public class XMLConsumer {
 
-    private static final Logger log = LoggerFactory.getLogger(Consumer.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(XMLConsumer.class.getSimpleName());
 
     public static void main(String[] args) {
         log.info("Welcome to the Kafka Consumer");
 
         String groupId = "kafka-consumer-test";
-        // String topic = "xml_topic";
-        String topic = "json_telemetry_messages";
+        String topic = "xml_telemetry_messages";
 
         // Create Consumer Properties
         Properties properties = new Properties();
@@ -55,8 +50,8 @@ public class Consumer {
         consumer.subscribe(Collections.singletonList(topic));
         log.info("Subscribed to topic: {}", topic);
 
-        //XMLSigner signer = new XMLSigner();
-        JSONSigner signer = new JSONSigner();
+        XMLSigner signer = new XMLSigner();
+       // JSONSigner signer = new JSONSigner();
 
         try {
             while (true) {
@@ -75,7 +70,7 @@ public class Consumer {
                         String signedMessage = signer.process(record.value());
 
                         // Enviar mensaje firmado al nuevo topic
-                        String outputTopic = "json_signed_messages";
+                        String outputTopic = "xml_signed_messages";
                         ProducerRecord<String, String> signedRecord = new ProducerRecord<>(outputTopic, record.key(), signedMessage);
                         producer.send(signedRecord, (metadata, exception) -> {
                             if (exception == null) {

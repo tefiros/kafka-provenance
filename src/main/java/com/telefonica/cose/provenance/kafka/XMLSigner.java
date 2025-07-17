@@ -10,7 +10,7 @@ public class XMLSigner {
         org.apache.xml.security.Init.init();
     }
 
-    public void process(String value) throws Exception {
+    public String process(String value) throws Exception {
 
 
         XMLSignatureInterface sign = new XMLSignature();
@@ -26,7 +26,7 @@ public class XMLSigner {
 
         String signedXmlContent = new org.jdom2.output.XMLOutputter().outputString(provenanceXML);
 
-        System.out.println("Signed Value: " + signedXmlContent);
+        return signedXmlContent;
 
 
     }

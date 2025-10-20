@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.insa.interfaces;
+package com.insa.provenance;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ch.swisscom.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializer;
 import ch.swisscom.kafka.serializers.yang.json.KafkaYangJsonSchemaSerializerConfig;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.confluent.kafka.serializers.subject.RecordNameStrategy;
 import org.apache.commons.lang3.SerializationException;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -38,7 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-public class JsonProducerIetfInterfaces {
+public class JsonProducerProvenance {
 
     public static String KAFKA_TOPIC = "yang.tests";
 
@@ -58,12 +58,12 @@ public class JsonProducerIetfInterfaces {
         KafkaProducer<String, YangDataDocument> producer = new KafkaProducer<>(producerConfig);
 
         // Parsing YANGs
-        YangSchemaContext schemaContext = YangYinParser.parse(JsonProducerIetfInterfaces.class.getClassLoader().getResource("interfaces/yang").getFile());
+        YangSchemaContext schemaContext = YangYinParser.parse(JsonProducerProvenance.class.getClassLoader().getResource("provenance/yang").getFile());
         ValidatorResult validatorResult = schemaContext.validate();
         System.out.println("YANG modules valid? " + validatorResult.isOk());
 
         // Parsing JSON
-        JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerIetfInterfaces.class.getClassLoader().getResource("interfaces/json/valid.json").getFile()));
+        JsonNode jsonNode = new ObjectMapper().readTree(new File(JsonProducerProvenance.class.getClassLoader().getResource("provenance/json/valid.json").getFile()));
         ValidatorResultBuilder validatorResultBuilder = new ValidatorResultBuilder();
         YangDataDocument doc = new YangDataDocumentJsonParser(schemaContext).parse(jsonNode, validatorResultBuilder);
         doc.update();

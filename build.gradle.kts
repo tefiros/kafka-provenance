@@ -8,6 +8,9 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     mavenLocal()
+    maven {
+        url = uri("https://packages.confluent.io/maven")
+    }
 }
 
 dependencies {
@@ -49,7 +52,9 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.17")
 
 
-    implementation("com.telefonica.api:provenance-api:0.0.4")
+    implementation("com.telefonica.api:provenance-api:0.0.5")
+
+    implementation("io.confluent:kafka-schema-registry-client:7.5.1")
 
 
 

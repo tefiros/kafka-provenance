@@ -24,7 +24,7 @@ public class Producer {
 
         String bootstrapServers = "localhost:9092";
         String topic = "json_telemetry_messages";
-        String filePath = "json-notif.json";
+        String filePath = "example.json";
 
         String message = Files.readString(Paths.get(filePath));
 
@@ -48,7 +48,7 @@ public class Producer {
         //send data
 
         // Enviar el mismo mensaje varias veces
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 2; i++) {
             ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, message);
 
             int finalI = i;

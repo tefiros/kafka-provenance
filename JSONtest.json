@@ -1,19 +1,25 @@
 {
-  "ietf-yp-notification:envelope" : {
-    "event-time" : "2024-10-10T08:00:11.22Z",
-    "contents" : {
-      "ietf-yang-push:push-update" : {
-        "id" : 1011,
-        "datastore-contents" : {
-          "ietf-interfaces:interfaces" : [ {
-            "interface" : {
-              "name" : "eth0",
-              "oper-status" : "up"
-            }
-          } ]
-        }
+  "interfaces" : {
+    "interface" : [ {
+      "name" : "eth0",
+      "description" : "Interfaz Ethernet principal",
+      "type" : "iana-if-type:ethernetCsmacd",
+      "enabled" : true,
+      "link-up-down-trap-enable" : "enabled",
+      "mtu" : 1500,
+      "ipv4" : {
+        "address" : [ {
+          "ip" : "192.168.1.10",
+          "netmask" : "255.255.255.0"
+        } ]
+      },
+      "ipv6" : {
+        "address" : [ {
+          "ip" : "2001:db8::1",
+          "prefix-length" : 64
+        } ]
       }
-    },
-    "ietf-yp-provenance:provenance" : "0oRRowEmA2N4bWwEZ2VjMi5rZXmg9lhAhF8OMAhPqBzIbGxPVCAmT6lYghqJdSVdDA31gUHsTW/gYTKL0MlvDo1BJs1Ql65r6ipMj1MLTolWhBYUm76j2Q=="
+    } ],
+    "interfaces-provenance-augmented:interfaces-provenance" : "0oRRowEmA2N4bWwEZ2VjMi5rZXmg9lhATXzHSbm6teNazUavIaRoS15r4O2Q4tq4A02D7fSq0ZWvp0iEUeune86x0aVYLCbP82buIJkGVErOgZqhb1kstQ=="
   }
 }

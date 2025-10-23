@@ -4,6 +4,10 @@ import com.telefonica.cose.provenance.*;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class XMLSigner {
 
     static {
@@ -12,7 +16,19 @@ public class XMLSigner {
 
     public String process(String value) throws Exception {
 
+        String yangSubject = "interfaces-provenance-augmented";
+        YANGprocessor processor = new YANGprocessor("http://localhost:8081");
+        String yangModule = processor.getLatestYangSchema(yangSubject);
 
+        // Guardar temporalmente para parsear
+        Path tempFile = Files.createTempFile("yang-module-", ".yang");
+        Files.writeString(tempFile, yangModule);
+        File yangFile = tempFile.toFile();
+
+        //Extraer moduleName y leafName del módulo
+        YANGMetadata metadata = YANGModuleProcessor.extractSignatureMetadata(yangFile);
+        String namespaceName = metadata.getNamespace();
+        String leafName = metadata.getLeafName();
         XMLSignatureInterface sign = new XMLSignature();
         XMLEnclosingMethodInterface enc = new XMLEnclosingMethods();
         Parameters params = new Parameters();
@@ -20,7 +36,10 @@ public class XMLSigner {
         String signature = sign.signing(value, params.getProperty("kid"));
 
         Document doc = loadXML(value);
-        Document provenanceXML = enc.enclosingMethod(doc, signature);
+       // Document provenanceXML = enc.enclosingMethod(doc, signature);
+
+        Document provenanceXML = enc.enclosingMethodParam(doc, signature, leafName, namespaceName);
+
 
         sign.saveXMLDocument(provenanceXML,"./test.xml");
 

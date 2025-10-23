@@ -46,7 +46,7 @@ public class ProducerXML {
         //send data
 
         // Enviar el mismo mensaje varias veces
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 2; i++) {
             ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, message);
 
             int finalI = i;

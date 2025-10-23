@@ -16,7 +16,7 @@ public class JSONSigner {
         YANGprocessor processor = new YANGprocessor("http://localhost:8081");
         String yangModule = processor.getLatestYangSchema(yangSubject);
 
-        // 2Guardar temporalmente para parsear
+        // Guardar temporalmente para parsear
         Path tempFile = Files.createTempFile("yang-module-", ".yang");
         Files.writeString(tempFile, yangModule);
         File yangFile = tempFile.toFile();

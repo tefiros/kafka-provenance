@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interfaces-state xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+<interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
     <interface>
         <name>GigabitEthernet1</name>
         <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">
@@ -27,4 +27,4 @@
             <out-errors>0</out-errors>
         </statistics>
     </interface>
-</interfaces-state>
+</interfaces>

@@ -28,7 +28,7 @@ public class Consumer {
 
         String groupId = "kafka-consumer-test";
         // String topic = "xml_topic";
-        String topic = "json_telemetry_messages";
+        String topic = "json_message";
 
         // Create Consumer Properties
         Properties properties = new Properties();

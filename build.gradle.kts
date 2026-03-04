@@ -31,9 +31,14 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.2")
+    implementation ("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.16.2")
+
     // canonicalization JCS
     // https://mvnrepository.com/artifact/io.github.erdtman/java-json-canonicalization
     implementation("io.github.erdtman:java-json-canonicalization:1.1")
+    //canonical cbor
+    // https://mvnrepository.com/artifact/com.upokecenter/cbor
+    implementation("com.upokecenter:cbor:4.5.6")
 
 
     // https://mvnrepository.com/artifact/com.upokecenter/cbor
@@ -52,7 +57,7 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.17")
 
 
-    implementation("com.telefonica.api:provenance-api:0.0.5")
+    implementation("com.telefonica.api:provenance-api:0.0.6")
 
     implementation("io.confluent:kafka-schema-registry-client:7.5.1")
 

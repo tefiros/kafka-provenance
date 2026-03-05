@@ -3,6 +3,8 @@ package com.telefonica.cose.provenance.kafka;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.upokecenter.cbor.CBORObject;
+import com.upokecenter.cbor.CBORType;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -85,6 +87,41 @@ public class MessageCorruption {
             return null;
         }
     }
+
+
+    public static CBORObject tamperAtSecondLevelCBOR(CBORObject original) {
+
+        try {
+
+            // Clonar CBOR (equivalente a deep copy)
+            CBORObject rootCopy = CBORObject.DecodeFromBytes(original.EncodeToBytes());
+
+            if (rootCopy.getType() == CBORType.Map) {
+
+                for (CBORObject key : rootCopy.getKeys()) {
+
+                    CBORObject secondLevel = rootCopy.get(key);
+
+                    if (secondLevel.getType() == CBORType.Map) {
+
+                        // añadir campo tampered
+                        secondLevel.set(CBORObject.FromObject("tampered"), CBORObject.FromObject(true));
+
+                        log.info("Altered node: {}", key.AsString());
+                        break;
+                    }
+                }
+            }
+
+            return rootCopy;
+
+        } catch (Exception e) {
+            log.error("Error tampering CBOR", e);
+            return original;
+        }
+    }
+
+
 
 }
 

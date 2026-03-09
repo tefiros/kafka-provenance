@@ -26,7 +26,7 @@ public class CBORVerifier {
         // -------------------------------
         Properties consumerConfig = new Properties();
         consumerConfig.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-        consumerConfig.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "cbor-verifier23");
+        consumerConfig.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "cbor-verifier22");
         consumerConfig.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringDeserializer");
         consumerConfig.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,

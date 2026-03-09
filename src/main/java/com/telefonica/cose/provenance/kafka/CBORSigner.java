@@ -54,6 +54,7 @@ public class CBORSigner {
         // CBOR mapper
         // -------------------------------
         ObjectMapper cborMapper = new ObjectMapper(new CBORFactory());
+        CBORYangSignerProcessor processor = new CBORYangSignerProcessor();
 
         // -------------------------------
         // LOOP
@@ -66,18 +67,16 @@ public class CBORSigner {
                     String key = record.key();
                     byte[] cborBytes = record.value();
 
-                    CBORSignatureInterface sign = new CBORSignature();
-                    CBOREnclosingMethodsInterface enclose = new CBOREnclosingMethods();
-                    Parameters param = new Parameters();
+//                    CBORSignatureInterface sign = new CBORSignature();
+//                    CBOREnclosingMethodsInterface enclose = new CBOREnclosingMethods();
+//                    Parameters param = new Parameters();
+//                    // Decodificar CBOR a JSON
+//                    CBORObject cborObject = CBORObject.DecodeFromBytes(cborBytes);
+//                    byte[] signature = sign.signingCBOR(cborObject,param.getProperty("kid"));
+//                    CBORObject provenanceCBOR = enclose.enclosingMethodCBOR(cborObject, signature);
+//                    CBORObject provenanceCBOR2 = enclose.enclosingMethodParamCBOR();
 
-                    // Decodificar CBOR a JSON
-                    CBORObject cborObject = CBORObject.DecodeFromBytes(cborBytes);
-
-
-                    byte[] signature = sign.signingCBOR(cborObject,param.getProperty("kid"));
-
-
-                    CBORObject provenanceCBOR = enclose.enclosingMethodCBOR(cborObject, signature);
+                    CBORObject provenanceCBOR = processor.process(cborBytes);
 
                     String provenanceLegible = provenanceCBOR.toString();
 

@@ -12,7 +12,7 @@ public class YANGprocessor {
 
     public YANGprocessor(String registryUrl) {
         // El segundo parámetro es el tamaño de cache local
-        this.client = new CachedSchemaRegistryClient(registryUrl, 10);
+        this.client = new CachedSchemaRegistryClient(registryUrl, 20);
     }
 
     public String getLatestYangSchema(String subject) throws Exception {
@@ -20,6 +20,8 @@ public class YANGprocessor {
         SchemaMetadata metadata = client.getLatestSchemaMetadata(subject);
         return metadata.getSchema(); // este string contiene el módulo YANG completo
     }
+
+
 
 
     public static void main(String[] args) {

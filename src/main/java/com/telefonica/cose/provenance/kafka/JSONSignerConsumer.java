@@ -6,29 +6,26 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Properties;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Properties;
 
 
-public class Consumer {
+public class JSONSignerConsumer {
 
-    private static final Logger log = LoggerFactory.getLogger(Consumer.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(JSONSignerConsumer.class.getSimpleName());
 
     public static void main(String[] args) {
         log.info("Welcome to the Kafka Consumer");
 
         String groupId = "kafka-consumer-test";
         // String topic = "xml_topic";
-        String topic = "json_message";
+        String topic = "json_telemetry_messages";
 
         // Create Consumer Properties
         Properties properties = new Properties();
@@ -72,7 +69,8 @@ public class Consumer {
                 for (ConsumerRecord<String, String> record : records) {
                     log.info("Received record: key = {}, value = {}", record.key(), record.value());
                     try {
-                        String signedMessage = signer.process(record.value());
+                        // String signedMessage = signer.process(record.value());
+                        String signedMessage = signer.processModuleLeaf(record.value(), "ietf-provenance-augmented", "interfaces-provenance");
 
                         // Enviar mensaje firmado al nuevo topic
                         String outputTopic = "json_signed_messages";

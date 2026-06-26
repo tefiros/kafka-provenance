@@ -36,7 +36,6 @@ public class CBORYangSignerProcessor {
 
         // firmar
         byte[] signature = sign.signingCBOR(cborObject, params.getProperty("kid"));
-
         // enclosing con metadata YANG
         CBORObject provenanceCBOR = enc.enclosingMethodParamCBOR(cborObject, signature, moduleName, leafName);
 

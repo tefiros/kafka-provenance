@@ -1,15 +1,25 @@
 {
-  "ietf-interfaces:interfaces" : {
+  "ietf-intercaes:interfaces" : {
     "interface" : [ {
       "name" : "eth0",
+      "description" : "Interfaz Ethernet principal",
       "type" : "iana-if-type:ethernetCsmacd",
-      "if-index" : 1,
-      "admin-status" : "up",
-      "oper-status" : "up",
-      "statistics" : {
-        "discontinuity-time" : "2014-07-29T13:43:12Z"
+      "enabled" : true,
+      "link-up-down-trap-enable" : "enabled",
+      "mtu" : 1500,
+      "ipv4" : {
+        "address" : [ {
+          "ip" : "192.168.1.10",
+          "netmask" : "255.255.255.0"
+        } ]
+      },
+      "ipv6" : {
+        "address" : [ {
+          "ip" : "2001:db8::1",
+          "prefix-length" : 64
+        } ]
       }
     } ],
-    "interfaces-provenance-augmented:interfaces-provenance" : "0oRRowEmA2N4bWwEZ2VjMi5rZXmg9lhAslRBT1giKgOKEjVjLT7up1Kv6ALBLNUj2qFQAGzEktZHpzu5y8IriG0og/jY4DP2XgG7ReMuE/Bn1sEVxtDQjA=="
+    "ietf-provenance-augmented:interfaces-provenance" : "0oRRowEmA2N4bWwEZ2VjMi5rZXmhB4GDTKIBJgRnZWMzLmtleaBYQPt0G/txwsq2TiLzCf2pZZpyVo+40gs6MklhN34Q8b9FzDADAUvuRKYdgIKPWyNq9TyE0TUwPnyZnPI5FZEjEfz2WEC0gmlw7/nG/VBXndX8W78hrogAETRLdbDrx8ymAYOBV49uMIYbINeqhSrLTrBFB9D+CAzKFumm404BNxAnMaj9"
   }
 }

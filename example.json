@@ -1,5 +1,5 @@
 {
-  "interfaces": {
+  "ietf-intercaes:interfaces": {
     "interface": [
       {
         "name": "eth0",

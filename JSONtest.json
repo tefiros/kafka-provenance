@@ -1,5 +1,5 @@
 {
-  "ietf-intercaes:interfaces" : {
+  "ietf-interfaces:interfaces" : {
     "interface" : [ {
       "name" : "eth0",
       "description" : "Interfaz Ethernet principal",
@@ -20,6 +20,6 @@
         } ]
       }
     } ],
-    "ietf-provenance-augmented:interfaces-provenance" : "0oRRowEmA2N4bWwEZ2VjMi5rZXmhB4GDTKIBJgRnZWMzLmtleaBYQPt0G/txwsq2TiLzCf2pZZpyVo+40gs6MklhN34Q8b9FzDADAUvuRKYdgIKPWyNq9TyE0TUwPnyZnPI5FZEjEfz2WEC0gmlw7/nG/VBXndX8W78hrogAETRLdbDrx8ymAYOBV49uMIYbINeqhSrLTrBFB9D+CAzKFumm404BNxAnMaj9"
+    "ietf-provenance-augmented:interfaces-provenance" : "0oRRowEmA2N4bWwEZ2VjMi5rZXmhB4GDTKIBJgRnZWMzLmtleaBYQPG1hRyLP3Djojv4dMFmjDrQDtwPLXsVZajijQQm+ma24k1JUfdcda9j0tYkodB+ep9eKeebkyM8EDfrJP3ml/X2WEB26taG3nSqQ2bhUYE2Fva9anhz5S4eeu60ViKEUFNbYCVw4TX+y+4m5vTrUtGWCm/I2MHsY0qxvkZP0dw83Npp"
   }
 }

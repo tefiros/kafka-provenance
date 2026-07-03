@@ -79,7 +79,7 @@ public class JSONSigner {
         JsonNode root = mapper.readTree(value);
         ObjectNode rootObj = (ObjectNode) root;
 
-        // 🔍 encontrar container dinámico
+        // encontrar container dinámico
         String containerName = root.fieldNames().next();
         ObjectNode container = (ObjectNode) root.get(containerName);
 
@@ -87,26 +87,26 @@ public class JSONSigner {
             throw new RuntimeException("Signature not found inside container");
         }
 
-        // ✅ 1. extraer firma actual
-        String existingSignature = container.get(leafName).asText();
+        // extraer firma actual
+//        String existingSignature = container.get(leafName).asText();
+//
+//        //  copiarla a root (hack necesario para la librería)
+//        rootObj.put(leafName, existingSignature);
+//
+//        // generar JSON con firma en root
+//        String jsonForSign = mapper.writeValueAsString(rootObj);
 
-        // ✅ 2. copiarla a root (hack necesario para la librería)
-        rootObj.put(leafName, existingSignature);
-
-        // ✅ 3. generar JSON con firma en root
-        String jsonForSign = mapper.writeValueAsString(rootObj);
-
-        // ✅ 4. countersign
+        // countersign
         String counterSignature = signer.addCounterSign(
-                jsonForSign,
+                value,
                 counterKid,
                 leafName
         );
 
-        // ✅ 5. quitar firma temporal de root
-        rootObj.remove(leafName);
+        // quitar firma temporal de root
+      //  rootObj.remove(leafName);
 
-        // ✅ 6. volver a meterla en el container (correcto YANG)
+        //volver a meterla en el container (correcto YANG)
         container.put(leafName, counterSignature);
 
         signer.saveJSONnode(rootObj, "./JSONtest.json");

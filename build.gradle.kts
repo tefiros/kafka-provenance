@@ -57,7 +57,7 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.17")
 
 
-    implementation("com.telefonica.api:provenance-api:0.0.7")
+    implementation("com.telefonica.api:provenance-api:0.0.8")
 
     implementation("io.confluent:kafka-schema-registry-client:7.5.1")
 

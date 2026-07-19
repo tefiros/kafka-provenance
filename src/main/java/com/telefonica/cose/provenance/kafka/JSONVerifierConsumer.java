@@ -93,7 +93,7 @@ public class JSONVerifierConsumer {
 //                        }
 
 //                        String processedString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(processedNode);
-//                        boolean valid = verifier.verifyJSONWithCountersigns(processedNode, "ietf-provenance-augmented", "interfaces-provenance");
+                        boolean valid = verifier.verifyJSONWithCountersigns(processedNode, "ietf-provenance-augmented", "interfaces-provenance");
 //
 //                        if (valid) {
 //                            log.info("ORIGINAL SIGNATURE VALID");
@@ -103,10 +103,10 @@ public class JSONVerifierConsumer {
 
 
 
-                        boolean validCS = verifier.verifyJSONCounterSignByKid(processedNode, "ietf-provenance-augmented", "interfaces-provenance", "ec3.key");
+                        //boolean validCS = verifier.verifyJSONCounterSignByKid(processedNode, "ietf-provenance-augmented", "interfaces-provenance", "ec3.key");
 
 
-                        if (validCS) {
+                        if (valid) {
                             log.info("CS SIGNATURE VALID");
                         } else {
                             log.warn("CS SIGNATURE INVALID");
